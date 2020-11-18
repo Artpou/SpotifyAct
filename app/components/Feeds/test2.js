@@ -9,7 +9,7 @@ function getAlbums(artists, type) {
       const url = `https://api.spotify.com/v1/artists/${
         artist.id
       }/albums?include_groups=${type}&market=FR&limit=3`;
-      //console.log(url);
+      // console.log(url);
       axios
         .get(url, {
           headers: {
@@ -27,8 +27,8 @@ function getAlbums(artists, type) {
           });
         })
         .catch(error => {
-          //console.log(`${type} ERROR ${index} : ${loaded}`);
-          //console.error(error);
+          // console.log(`${type} ERROR ${index} : ${loaded}`);
+          // console.error(error);
           // setLoading(false);
         })
         .finally(() => {

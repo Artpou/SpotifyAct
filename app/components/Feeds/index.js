@@ -173,7 +173,9 @@ function Feeds() {
             if (errors.length > 0) {
               console.log(errors);
               console.log('RELOAD ERRORS');
-              setLoadingProgress(`${loadingProgress} la première initialisation peut prendre jusqu'à 30 secondes`);
+              setLoadingProgress(
+                `${loadingProgress} la première initialisation peut prendre jusqu'à 30 secondes`,
+              );
               timeout(2500).then(() => {
                 getAlbums(setList, setLoading, type, errors);
               });
