@@ -7,7 +7,6 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import CarouselTitle from '../../components/Carousel';
 import Feeds from '../../components/Feeds';
 import LoginButton from '../../components/LoginButton';
 import ResponsiveDrawer from '../Template/ResponsiveDrawer';
