@@ -14,6 +14,6 @@ export const SpotifyData = {
   clientId: '0aae5c97723143efb114af6f89263605',
   clientSecret: '14a06525bca14592958c3f03ffb4fb8a',
   scope: 'user-read-private user-read-email user-follow-read',
-  redirect_uri: 'http://localhost:3000/callback',
+  redirect_uri: 'https://spotifyact.netlify.app/callback',
   state: generateRandomString(16),
 };
