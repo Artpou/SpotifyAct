@@ -21,6 +21,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import ListIcon from '@material-ui/icons/FormatListBulleted';
 import GridIcon from '@material-ui/icons/Apps';
 
+import test from './test';
+import test2 from './test2';
+
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
@@ -81,7 +84,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Feeds() {
-  const [artists, setArtists] = useState([]);
+  const [artists, setArtists] = useState();
   const [loadingArtists, setloadingArtists] = useState(true);
   const [albums, setAlbums] = useState([]);
   const [loadingAlbum, setloadingAlbum] = useState(true);
@@ -93,92 +96,81 @@ function Feeds() {
 
   const classes = useStyles();
 
-  function getArtistsRequest(next = '') {
-    const nextPath = next !== '' ? `&after=${next}` : '';
-    const url = `https://api.spotify.com/v1/me/following?type=artist${nextPath}&limit=50`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      })
-      .then(res => {
-        // setArtists([...artists, ...['res.data.artists.items']]);
-        setArtists(Array.prototype.push.apply(artists, res.data.artists.items));
-        setArtists([...artists, ...res.data.artists.items]);
-        if (res.data.artists.cursors.after) {
-          getArtistsRequest(res.data.artists.cursors.after);
-        } else {
-          setloadingArtists(false);
-        }
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
-
-  function getAlbums(setList, setLoading, type = 'album') {
-    let i = 0;
+  function getAlbums(setList, setLoading, type = 'album', unloaded = artists) {
     const list = [];
-    artists
-      .map(function filter(a) {
-        return a.id;
-      })
-      .forEach(id => {
-        const url = `https://api.spotify.com/v1/artists/${id}/albums?offset=0&limit=3&include_groups=${type}&market=FR`;
-        axios
-          .get(url, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          })
-          .then(res => {
-            i++;
-            res.data.items.forEach(album => {
-              if (new Date(album.release_date) > new Date('2020-11')) {
-                if (!list.some(a => a.id === album.id)) {
-                  list.push(album);
-                }
+    let loaded = 0;
+    console.log(`${type} LOAD ALL`);
+    artists.forEach(function iterate(artist, index) {
+      const url = `https://api.spotify.com/v1/artists/${
+        artist.id
+      }/albums?offset=0&limit=3&include_groups=${type}&market=FR`;
+      axios
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then(res => {
+          // console.log(res);
+          res.data.items.forEach(album => {
+            if (new Date(album.release_date) > new Date('2020-11')) {
+              if (!list.some(a => a.id === album.id)) {
+                list.push(album);
               }
-            });
-            if (i >= artists.length) {
-              setLoading(false);
-              list.sort((o1, o2) => {
-                if (new Date(o1.release_date) < new Date(o2.release_date)) {
-                  return 1;
-                }
-                if (new Date(o1.release_date) > new Date(o2.release_date)) {
-                  return -1;
-                }
-                return 0;
-              });
-              setList(list);
-              console.log(list);
             }
-          })
-          .catch(error => {
-            i++;
-            console.log(error);
           });
-      });
+        })
+        .catch(error => {
+          console.log(`${type} ERROR ${index} : ${loaded}`);
+          console.error(error);
+          // setLoading(false);
+        })
+        .finally(() => {
+          loaded++;
+          unloaded.pop();
+          // for the last request
+          if (loaded === artists.length - 1) {
+            list.sort((o1, o2) => {
+              if (new Date(o1.release_date) < new Date(o2.release_date)) {
+                return 1;
+              }
+              if (new Date(o1.release_date) > new Date(o2.release_date)) {
+                return -1;
+              }
+              return 0;
+            });
+            setLoading(false);
+            console.log(unloaded);
+            console.log('END LOAD');
+            setList(list);
+          }
+        });
+    });
   }
 
   useEffect(() => {
     console.log('load artists');
-    getArtistsRequest();
+    test().then(res => {
+      setArtists(res);
+      setloadingArtists(false);
+    });
   }, []);
 
   useEffect(() => {
     if (loadingAlbum) {
-      getAlbums(setAlbums, setloadingAlbum, 'album');
+      console.log(artists);
+      // getAlbums(setAlbums, setloadingAlbum, 'album');
+      test2(artists, 'albums');
       setLoadingProgress('chargement des albums');
+      console.log('chargement des albums');
     }
   }, [loadingArtists]);
 
   useEffect(() => {
     if (loadingSingle && !loadingAlbum) {
-      getAlbums(setSingle, setLoadingSingle, 'single');
+      //getAlbums(setSingle, setLoadingSingle, 'single');
       setLoadingProgress('chargement des singles');
+      console.log('chargement des singles');
     }
   }, [loadingAlbum]);
 
