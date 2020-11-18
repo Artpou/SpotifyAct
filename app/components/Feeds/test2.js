@@ -8,7 +8,7 @@ function getAlbums(artists, type) {
     artists.forEach(function iterate(artist, index) {
       const url = `https://api.spotify.com/v1/artists/${
         artist.id
-      }/albums?offset=0&limit=3&include_groups=${type}&market=FR`;
+      }/albums?include_groups=${type}&market=FR&limit=3`;
       //console.log(url);
       axios
         .get(url, {

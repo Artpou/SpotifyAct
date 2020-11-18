@@ -21,9 +21,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import ListIcon from '@material-ui/icons/FormatListBulleted';
 import GridIcon from '@material-ui/icons/Apps';
 
-import test from './test';
-import test2 from './test2';
-
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
@@ -84,7 +81,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Feeds() {
-  const [artists, setArtists] = useState();
+  const [artists, setArtists] = useState([]);
   const [loadingArtists, setloadingArtists] = useState(true);
   const [albums, setAlbums] = useState([]);
   const [loadingAlbum, setloadingAlbum] = useState(true);
@@ -96,9 +93,42 @@ function Feeds() {
 
   const classes = useStyles();
 
+  function timeout(ms) {
+    // pass a time in milliseconds to this function
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function getArtists(next = '', loaded = []) {
+    const nextPath = next !== '' ? `&after=${next}` : '';
+    const url = `https://api.spotify.com/v1/me/following?type=artist${nextPath}&limit=50`;
+    const setLoaded = loaded;
+    axios
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+      .then(res => {
+        res.data.artists.items.forEach(element => {
+          setLoaded.push(element);
+        });
+        if (res.data.artists.cursors.after) {
+          getArtists(res.data.artists.cursors.after, loaded);
+        } else {
+          // console.log(setLoaded);
+          setArtists(setLoaded);
+          setloadingArtists(false);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
   function getAlbums(setList, setLoading, type = 'album', unloaded = artists) {
     const list = [];
     let loaded = 0;
+    const errors = [];
     console.log(`${type} LOAD ALL`);
     artists.forEach(function iterate(artist, index) {
       const url = `https://api.spotify.com/v1/artists/${
@@ -121,13 +151,14 @@ function Feeds() {
           });
         })
         .catch(error => {
-          console.log(`${type} ERROR ${index} : ${loaded}`);
-          console.error(error);
+          errors.push(artist);
+          // console.log(errors);
+          // console.log(`${type} ERROR ${index} : ${loaded}`);
           // setLoading(false);
         })
         .finally(() => {
           loaded++;
-          unloaded.pop();
+          // console.log(loaded+'   '+artists.length);
           // for the last request
           if (loaded === artists.length - 1) {
             list.sort((o1, o2) => {
@@ -139,10 +170,18 @@ function Feeds() {
               }
               return 0;
             });
-            setLoading(false);
-            console.log(unloaded);
-            console.log('END LOAD');
-            setList(list);
+            if (errors.length > 0) {
+              console.log(errors);
+              console.log('RELOAD ERRORS');
+              setLoadingProgress(`${loadingProgress} la première initialisation peut prendre jusqu'à 30 secondes`);
+              timeout(2500).then(() => {
+                getAlbums(setList, setLoading, type, errors);
+              });
+            } else {
+              setLoading(false);
+              console.log('END LOAD');
+              setList(list);
+            }
           }
         });
     });
@@ -150,25 +189,20 @@ function Feeds() {
 
   useEffect(() => {
     console.log('load artists');
-    test().then(res => {
-      setArtists(res);
-      setloadingArtists(false);
-    });
+    getArtists();
   }, []);
 
   useEffect(() => {
-    if (loadingAlbum) {
-      console.log(artists);
-      // getAlbums(setAlbums, setloadingAlbum, 'album');
-      test2(artists, 'albums');
-      setLoadingProgress('chargement des albums');
+    if (loadingAlbum && !loadingArtists) {
       console.log('chargement des albums');
+      getAlbums(setAlbums, setloadingAlbum, 'album');
+      setLoadingProgress('chargement des albums');
     }
   }, [loadingArtists]);
 
   useEffect(() => {
     if (loadingSingle && !loadingAlbum) {
-      //getAlbums(setSingle, setLoadingSingle, 'single');
+      getAlbums(setSingle, setLoadingSingle, 'single');
       setLoadingProgress('chargement des singles');
       console.log('chargement des singles');
     }
