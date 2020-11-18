@@ -5,7 +5,7 @@ function getAlbums(artists, type) {
     const list = [];
     let loaded = 0;
     console.log(`${type} LOAD ALL`);
-    artists.forEach(function iterate(artist, index) {
+    artists.forEach(function iterate(artist) {
       const url = `https://api.spotify.com/v1/artists/${
         artist.id
       }/albums?include_groups=${type}&market=FR&limit=3`;
@@ -28,12 +28,11 @@ function getAlbums(artists, type) {
         })
         .catch(error => {
           // console.log(`${type} ERROR ${index} : ${loaded}`);
-          // console.error(error);
+          console.error(error);
           // setLoading(false);
         })
         .finally(() => {
-          loaded++;
-          unloaded.pop();
+          loaded += 1;
           // for the last request
           if (loaded === artists.length - 1) {
             list.sort((o1, o2) => {
