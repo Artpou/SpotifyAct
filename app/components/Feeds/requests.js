@@ -33,7 +33,13 @@ export function getArtists(setArtists, setLoading, next = '', loaded = []) {
     });
 }
 
-export function getAlbums(artists ,setList, setLoading, type = 'album', unloaded = artists) {
+export function getAlbums(
+  artists,
+  setList,
+  setLoading,
+  type = 'album',
+  unloaded = artists,
+) {
   const list = [];
   let loaded = 0;
   const errors = [];
@@ -96,4 +102,28 @@ export function getAlbums(artists ,setList, setLoading, type = 'album', unloaded
         }
       });
   });
+}
+
+export function putPlayMusic(uri) {
+  const url = `https://api.spotify.com/v1/me/player/play`;
+  axios
+    .put(
+      url,
+      {
+        context_uri: uri,
+        offset: {
+          position: 0,
+        },
+        position_ms: 0,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      },
+    )
+    .then(res => {
+      console.log(res);
+    })
+    .catch(error => {});
 }

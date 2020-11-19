@@ -13,10 +13,10 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Button,
+  Tooltip,
+  Link,
 } from '@material-ui/core';
-
-import {getAlbums, getArtists} from './requests';
-import axios from 'axios';
 
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -25,8 +25,10 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import ListIcon from '@material-ui/icons/FormatListBulleted';
 import GridIcon from '@material-ui/icons/Apps';
+import PlayIcon from '@material-ui/icons/PlayCircleOutline';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import { getAlbums, getArtists, putPlayMusic } from './requests';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -34,11 +36,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
   },
   icon: {
-    marginRight: theme.spacing(2),
-  },
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6),
+    fontSize: '32px', 
   },
   heroButtons: {
     marginTop: theme.spacing(4),
@@ -79,10 +77,18 @@ const useStyles = makeStyles(theme => ({
     '&:hover, &:focus': {
       backgroundColor: '#000',
       opacity: 0.3,
+      content: 'hihi',
     },
   },
   cardContent: {
     flexGrow: 1,
+  },
+  cardFooter: {
+    justifyContent: 'space-between',
+    padding: '12px',
+  },
+  cardFooterInner: {
+    marginRight: '8px',
   },
   listItem: {
     color: '#fff',
@@ -94,10 +100,15 @@ const useStyles = makeStyles(theme => ({
     color: '#3E3E3E',
   },
   itemImg: {
-    margin: '0 16px',
+    margin: '0 12px',
+    minWidth: '64px',
   },
   itemDate: {
     color: '#3E3E3E',
+  },
+  playButton: {
+    margin: '0 16px 0 8px',
+    fontSize: '32px',
   },
   title: {
     color: '#fff',
@@ -151,12 +162,6 @@ function Feeds() {
     }
   };
 
-  const handlePlayButton = (event, value) => {
-    if (value) {
-      setDisplayList(value);
-    }
-  };
-
   const toggleDisplayList = (
     <ToggleButtonGroup
       value={displayList}
@@ -169,14 +174,14 @@ function Feeds() {
         value="list"
         checked={displayList === 'list'}
       >
-        <ListIcon />
+        <ListIcon className={classes.icon}/>
       </ToggleButton>
       <ToggleButton
         className={classes.toggleButton}
         value="grid"
         checked={displayList === 'grid'}
       >
-        <GridIcon />
+        <GridIcon className={classes.icon}/>
       </ToggleButton>
     </ToggleButtonGroup>
   );
@@ -187,13 +192,12 @@ function Feeds() {
         Array.from(props.list).map(album => (
           <Grid item key={album.id} xs={12} sm={6} md={4}>
             <Card className={classes.card}>
-              <a href={album.external_urls.spotify}>
+              <button type="button" onClick={() => putPlayMusic(album.uri)}>
                 <CardMedia
                   className={classes.cardMedia}
                   image={album.images[1].url}
-                  title="Image title"
                 />
-              </a>
+              </button>
               <CardContent className={classes.cardContent}>
                 <Typography gutterBottom variant="h5" component="h2">
                   <a
@@ -213,8 +217,14 @@ function Feeds() {
                   ))}
                 </Typography>
               </CardContent>
-              <CardActions>
-                <Typography component="span">
+              <CardActions className={classes.cardFooter}>
+                <Button color="primary" onClick={() => putPlayMusic(album.uri)}>
+                  play
+                </Button>
+                <Typography
+                  component="span"
+                  className={classes.cardFooterInner}
+                >
                   {new Date(album.release_date).toLocaleDateString('fr-FR', {
                     month: 'long',
                     day: 'numeric',
@@ -277,6 +287,9 @@ function Feeds() {
                 </React.Fragment>
               }
             />
+            <button type="button" onClick={() => putPlayMusic(album.uri)}>
+              <PlayIcon color="primary" className={classes.playButton} />
+            </button>
           </ListItem>
         ))}
     </List>
@@ -293,9 +306,11 @@ function Feeds() {
         </Container>
       ) : (
         <Container className={classes.cardGrid} maxWidth="md">
-          <h1>Nouvelles Sorties</h1>
+          <Typography color="primary">
+            <h1>Nouvelles Sorties</h1>
+          </Typography>
           <div className={classes.header}>
-            <h2>Nouveaux Albums</h2>
+            <h2>Nouveaux Albums ({albums.length})</h2>
             {toggleDisplayList}
           </div>
           <hr />
@@ -306,7 +321,7 @@ function Feeds() {
           )}
 
           <div className={classes.header}>
-            <h2>Nouveaux Singles</h2>
+            <h2>Nouveaux Singles ({single.length})</h2>
             {toggleDisplayList}
           </div>
           <hr />

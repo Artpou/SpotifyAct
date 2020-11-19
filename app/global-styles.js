@@ -16,6 +16,15 @@ const GlobalStyle = createGlobalStyle`
     color: #fff;
     text-decoration: underline;
   }
+  button, input[type="submit"], input[type="reset"] {
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
 `;
 
 export default GlobalStyle;
