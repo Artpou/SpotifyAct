@@ -16,12 +16,14 @@ import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 
-import { getArtists, getAlbums, getSingles } from './requests';
+import { Container, makeStyles } from '@material-ui/core';
+import { getUser ,getArtists, getAlbums, getSingles } from './requests';
 
 import GlobalStyle from '../../global-styles';
 import ResponsiveDrawer from '../Template/ResponsiveDrawer';
 import LoginButton from '../../components/LoginButton';
-import { Container, makeStyles } from '@material-ui/core';
+import AlbumsPage from '../AlbumsPage';
+import SinglesPage from '../SinglesPage';
 
 const theme = createMuiTheme({
   palette: {
@@ -43,22 +45,23 @@ const theme = createMuiTheme({
   },
 });
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   main: {
     textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
   },
-}));
+});
 
 export default function App() {
   const classes = useStyles();
   const [data, setData] = useState({
+    user: [],
     artists: [],
     albums: [],
     singles: [],
     loading: false,
-    loadingProgress: 'artists',
+    loadingProgress: 'user',
     loaded: false,
   });
 
@@ -66,6 +69,10 @@ export default function App() {
     if (!data.loading && !data.loaded) {
       console.log(`load ${data.loadingProgress}`);
       switch (data.loadingProgress) {
+        case 'user':
+          getUser(setData);
+          break;
+
         case 'artists':
           getArtists(setData);
           break;
@@ -103,12 +110,18 @@ export default function App() {
           <GlobalStyle />
           {connected ? (
             <Switch>
+              <Route exact path="/" render={() => <HomePage data={data} />} />
+              <Route exact path="/callback" component={CallbackPage} />
               <Route
                 exact
-                path="/"
-                render={props => <HomePage data={data} />}
+                path="/Albums"
+                render={() => <AlbumsPage data={data} />}
               />
-              <Route exact path="/callback" component={CallbackPage} />
+              <Route
+                exact
+                path="/Singles"
+                render={() => <SinglesPage data={data} />}
+              />
               <Route component={NotFoundPage} />
             </Switch>
           ) : (

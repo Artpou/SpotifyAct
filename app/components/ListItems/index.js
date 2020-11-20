@@ -72,9 +72,9 @@ export default function ListItems(props) {
       </div>
       <hr />
       {displayList === 'grid' ? (
-        <ListCards list={props.list} max={props.max} />
+        <ListCards list={props.list} max={props.max} reduced={props.reduced} />
       ) : (
-        <ListRows list={props.list} max={props.max} />
+        <ListRows list={props.list} max={props.max} reduced={props.reduced} />
       )}
     </div>
   );

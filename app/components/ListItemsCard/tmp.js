@@ -4,16 +4,7 @@
  *
  */
 
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Grid,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import { Button, Card, CardActions, CardContent, CardMedia, Grid, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
@@ -23,11 +14,19 @@ import { putPlayMusic } from '../../utils/requests';
 import messages from './messages';
 
 const useStyles = makeStyles(theme => ({
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  heroButtons: {
+    marginTop: theme.spacing(4),
+  },
   grid: {
     padding: '20px 0',
   },
-  gridItem: {
-    // minWidth: '200px',
+  cardGrid: {
+    paddingTop: theme.spacing(8),
+    paddingBottom: theme.spacing(8),
   },
   cardMedia: {
     paddingTop: '100%',
@@ -63,19 +62,11 @@ const useStyles = makeStyles(theme => ({
 function ListItemsCard(props) {
   const classes = useStyles();
   return (
-    <Grid container className={classes.grid} spacing={2}>
+    <Grid container className={classes.grid} spacing={4}>
       {props.list &&
         Array.from(props.reduced ? props.list.slice(0, 3) : props.list).map(
           album => (
-            <Grid
-              item
-              key={album.id}
-              xs={12}
-              sm={12}
-              md={4}
-              lg={props.reduced ? 4 : 3}
-              xl={props.reduced ? 4 : 2}
-            >
+            <Grid item key={album.id} xs={12} sm={6} md={4}>
               <Card className={classes.card}>
                 <button type="button" onClick={() => putPlayMusic(album.uri)}>
                   <CardMedia
@@ -85,7 +76,7 @@ function ListItemsCard(props) {
                   />
                 </button>
                 <CardContent className={classes.cardContent}>
-                  <Typography>
+                  <Typography gutterBottom variant="h5" component="h2">
                     <a
                       className={classes.title}
                       href={album.external_urls.spotify}
@@ -94,6 +85,7 @@ function ListItemsCard(props) {
                     </a>
                   </Typography>
                   <Typography component="span">
+                    Artiste(s) :
                     {Array.from(album.artists).map(artist => (
                       <div>
                         <a href={artist.external_urls.spotify}>{artist.name}</a>
@@ -114,7 +106,7 @@ function ListItemsCard(props) {
                     className={classes.cardFooterInner}
                   >
                     {new Date(album.release_date).toLocaleDateString('fr-FR', {
-                      month: 'numeric',
+                      month: 'long',
                       day: 'numeric',
                     })}
                   </Typography>

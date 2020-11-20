@@ -7,10 +7,10 @@
 import React from 'react';
 import { Button } from '@material-ui/core';
 import querystring from 'querystring';
+import { makeStyles } from '@material-ui/core/styles';
 import { SpotifyData } from '../../utils/spotify';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   button: {
     margin: '20px',
     background: '#1DB954',

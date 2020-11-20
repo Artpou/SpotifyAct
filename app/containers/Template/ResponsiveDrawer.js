@@ -86,20 +86,22 @@ function ResponsiveDrawer(props) {
   const theme = useTheme();
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [location, setLocation] = React.useState();
-  let currentLocation = window.location.pathname;
+  const [location, setLocation] = React.useState(
+    window.location.pathname.split('/')[1],
+  );
 
   const ConnectionButton = props.connected ? <LogoutButton /> : <LoginButton />;
   
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
-  React.useEffect(function onFirstMount() {
-  });
+  
+  const handleChangeLink = (e) => {
+    console.log(e.to);
+  };
 
   function isCurrentPath(value) {
-    return window && window.location.pathname === `/${value}`;
+    return location === value;
   }
 
   const drawer = (
@@ -111,6 +113,7 @@ function ResponsiveDrawer(props) {
               <Link
                 to={text === 'Home' ? '/' : `/${text}`}
                 style={{ textDecoration: 'none' }}
+                onClick={() => setLocation(text)}
               >
                 <ListItem key={text}>
                   {isCurrentPath(text) && (

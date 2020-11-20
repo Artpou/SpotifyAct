@@ -1,8 +1,38 @@
-import React from 'react';
 import axios from 'axios';
 
 function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function reloadToken(set) {
+  localStorage.getItem('token');
+}
+
+export function getUser(set) {
+  set(prevState => ({
+    ...prevState,
+    loading: true,
+  }));
+
+  const url = `https://api.spotify.com/v1/me`;
+  axios
+    .get(url, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+    .then(res => {
+      console.log(res);
+      set(prevState => ({
+        ...prevState,
+        user: res.data,
+        loadingProgress: 'artists',
+        loading: false,
+      }));
+    })
+    .catch(error => {
+      reloadToken(set);
+    });
 }
 
 export function getArtists(set, next = '', loaded = []) {
@@ -67,19 +97,22 @@ export function getAlbums(artists, set, loadedAlbums = []) {
       })
       .then(res => {
         res.data.items.forEach(album => {
-          if (new Date(album.release_date) > new Date('2020-11')) {
+          if (
+            new Date(album.release_date) >
+            new Date().setMonth(new Date().getMonth() - 1)
+          ) {
             if (!list.some(a => a.id === album.id)) {
               list.push(album);
             }
           }
         });
       })
-      .catch(error => {
+      .catch(() => {
         // console.log(errors);
         errors.push(artist);
       })
       .finally(() => {
-        loaded++;
+        loaded += 1;
         // console.log(loaded+'   '+artists.length);
         // for the last request
         if (loaded === artists.length - 1) {
@@ -142,19 +175,22 @@ export function getSingles(artists, set, loadSingle = []) {
       })
       .then(res => {
         res.data.items.forEach(album => {
-          if (new Date(album.release_date) > new Date('2020-11')) {
+          if (
+            new Date(album.release_date) >
+            new Date().setMonth(new Date().getMonth() - 1)
+          ) {
             if (!list.some(a => a.id === album.id)) {
               list.push(album);
             }
           }
         });
       })
-      .catch(error => {
+      .catch(() => {
         // console.log(errors);
         errors.push(artist);
       })
       .finally(() => {
-        loaded++;
+        loaded += 1;
         // console.log(loaded+'   '+artists.length);
         // for the last request
         if (loaded === artists.length - 1) {

@@ -60,7 +60,7 @@ function ListItemsRow(props) {
   return (
     <List className={classes.root}>
       {props.list &&
-        Array.from(props.max ? props.list.slice(0, props.max) : props.list).map(
+        Array.from(props.reduced ? props.list.slice(0, 3) : props.list).map(
           album => (
             <ListItem
               key={album.id}

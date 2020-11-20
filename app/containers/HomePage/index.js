@@ -21,13 +21,17 @@ export default function HomePage(props) {
         <Loader text={props.data.loadingProgress} />
       ) : (
         <div>
-          <ListItems name="albums" list={props.data.albums} max={3} />
+          <ListItems name="albums" list={props.data.albums} reduced />
           <Link to="/Albums">
-            <h2>Tout voir</h2>
+            <Typography color="primary">
+              <h1>Tout voir</h1>
+            </Typography>
           </Link>
-          <ListItems name="singles" list={props.data.singles} max={3} />
+          <ListItems name="singles" list={props.data.singles} reduced />
           <Link to="/Singles">
-            <h2>Tout voir</h2>
+            <Typography color="primary">
+              <h1>Tout voir</h1>
+            </Typography>
           </Link>
         </div>
       )}

@@ -5,13 +5,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Button, Container } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   profil: {
     textAlign: 'center',
     display: 'flex',
@@ -29,35 +29,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function LogoutButton() {
-  const classes = useStyles();
-  const [user, setUser] = useState('');
+  const [, setUser] = useState('');
 
   function disconnect() {
     localStorage.setItem('token', '');
     window.location.reload(false);
   }
-
-  function getProfil(next = '') {
-    const nextPath = next !== '' ? `&after=${next}` : '';
-    const url = `https://api.spotify.com/v1/me`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      })
-      .then(res => {
-        console.log(res);
-        setUser(res.data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
-
-  useEffect(() => {
-    getProfil();
-  }, []);
 
   /*
   <Container className={classes.profil}>
@@ -67,9 +44,9 @@ function LogoutButton() {
   </Container>
   */
   return (
-      <Button variant="contained" onClick={disconnect}>
-        Logout
-      </Button>
+    <Button variant="contained" onClick={disconnect}>
+      Logout
+    </Button>
   );
 }
 
