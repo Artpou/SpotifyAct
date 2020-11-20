@@ -6,32 +6,41 @@
  */
 
 import React from 'react';
-import styled from 'styled-components';
-import Feeds from '../../components/Feeds';
+import Loader from '../../components/Loader';
 import LoginButton from '../../components/LoginButton';
-import ResponsiveDrawer from '../Template/ResponsiveDrawer';
+import ListItems from '../../components/ListItems';
+import { Typography } from '@material-ui/core';
 
-const Title = styled.h1`
-  text-align: center;
-  padding: 50px;
-`;
+function Homi(props) {
+  return (
+    <div>
+      <Typography color="primary">
+        <h1>Nouvelles Sorties</h1>
+      </Typography>
+      {!props.data.loaded ? (
+        <Loader text={props.data.loadingProgress} />
+      ) : (
+        <ListItems data={props.data} max={3} />
+      )}
+    </div>
+  );
+}
 
-export default function HomePage() {
+export default function HomePage(props) {
   const connected =
     localStorage.getItem('token') && localStorage.getItem('token') !== '';
 
-  const content = connected ? (
+  return (
     <div>
-      <Feeds />
+      {connected ? (
+        <Homi data={props.data} />
+      ) : (
+        <h1>
+          Connectez-vous avec votre compte Spotify pour commencer à utiliser
+          SpotifyActivity
+          <LoginButton />
+        </h1>
+      )}
     </div>
-  ) : (
-    <Title>
-      Connectez-vous avec votre compte Spotify pour commencer à utiliser
-      SpotifyActivity
-      <LoginButton />
-    </Title>
   );
-
-  console.log(localStorage.getItem('token'));
-  return <ResponsiveDrawer content={content} />;
 }

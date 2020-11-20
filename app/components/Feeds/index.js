@@ -28,7 +28,7 @@ import GridIcon from '@material-ui/icons/Apps';
 import PlayIcon from '@material-ui/icons/PlayCircleOutline';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import { getAlbums, getArtists, putPlayMusic } from './requests';
+import { putPlayMusic } from '../../utils/requests';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
   },
   icon: {
-    fontSize: '32px', 
+    fontSize: '32px',
   },
   heroButtons: {
     marginTop: theme.spacing(4),
@@ -119,42 +119,140 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function Feeds() {
+export function ListCards(props) {
   const classes = useStyles();
-
-  const [artists, setArtists] = useState([]);
-  const [albums, setAlbums] = useState([]);
-  const [single, setSingle] = useState([]);
-
-  const [loadingArtists, setloadingArtists] = useState(true);
-  const [loadingAlbum, setloadingAlbum] = useState(true);
-  const [loadingSingle, setLoadingSingle] = useState(true);
-  const [displayList, setDisplayList] = useState('grid');
-
-  const [loadingProgress, setLoadingProgress] = useState(
-    'chargement des artistes',
+  return (
+    <Grid container className={classes.grid} spacing={4}>
+      {props.list &&
+        Array.from(props.max ? props.list.slice(0, props.max) : props.list).map(
+          album => (
+            <Grid item key={album.id} xs={12} sm={6} md={4}>
+              <Card className={classes.card}>
+                <button type="button" onClick={() => putPlayMusic(album.uri)}>
+                  <CardMedia
+                    className={classes.cardMedia}
+                    image={album.images[1].url}
+                  />
+                </button>
+                <CardContent className={classes.cardContent}>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    <a
+                      className={classes.title}
+                      href={album.external_urls.spotify}
+                    >
+                      {album.name}
+                    </a>
+                  </Typography>
+                  <Typography component="span">
+                    Artiste(s) :
+                    {Array.from(album.artists).map(artist => (
+                      <div>
+                        <a href={artist.external_urls.spotify}>{artist.name}</a>
+                        <br />
+                      </div>
+                    ))}
+                  </Typography>
+                </CardContent>
+                <CardActions className={classes.cardFooter}>
+                  <Button
+                    color="primary"
+                    onClick={() => putPlayMusic(album.uri)}
+                  >
+                    play
+                  </Button>
+                  <Typography
+                    component="span"
+                    className={classes.cardFooterInner}
+                  >
+                    {new Date(album.release_date).toLocaleDateString('fr-FR', {
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </Typography>
+                </CardActions>
+              </Card>
+            </Grid>
+          ),
+        )}
+    </Grid>
   );
+}
 
-  useEffect(() => {
-    console.log('load artists');
-    getArtists(setArtists, setloadingArtists);
-  }, []);
+function ListItems(props) {
+  const classes = useStyles();
+  return (
+    <List className={classes.root}>
+      {props.list &&
+        Array.from(props.max ? props.list.slice(0, props.max) : props.list).map(
+          album => (
+            <ListItem
+              key={album.id}
+              className={classes.listItem}
+              disableGutters
+            >
+              <ListItemAvatar className={classes.itemImg}>
+                <a href={album.external_urls.spotify}>
+                  <CardMedia
+                    className={classes.cardMedia}
+                    image={album.images[1].url}
+                    title="Image title"
+                  />
+                </a>
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <React.Fragment>
+                    <a
+                      className={classes.title}
+                      href={album.external_urls.spotify}
+                    >
+                      {album.name}
+                    </a>
+                  </React.Fragment>
+                }
+                secondary={
+                  <React.Fragment>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      className={classes.inline}
+                      color="textPrimary"
+                    >
+                      {Array.from(album.artists).map((artist, index) => (
+                        <span>
+                          <a href={artist.external_urls.spotify}>
+                            {artist.name}
+                          </a>
+                          {index < album.artists.length - 1 && ', '}
+                        </span>
+                      ))}
+                    </Typography>
+                    <br />
+                    <span className={classes.itemDate}>
+                      {new Date(album.release_date).toLocaleDateString(
+                        'fr-FR',
+                        {
+                          month: 'long',
+                          day: 'numeric',
+                        },
+                      )}
+                    </span>
+                  </React.Fragment>
+                }
+              />
+              <button type="button" onClick={() => putPlayMusic(album.uri)}>
+                <PlayIcon color="primary" className={classes.playButton} />
+              </button>
+            </ListItem>
+          ),
+        )}
+    </List>
+  );
+}
 
-  useEffect(() => {
-    if (loadingAlbum && !loadingArtists) {
-      console.log('chargement des albums');
-      getAlbums(artists, setAlbums, setloadingAlbum, 'album');
-      setLoadingProgress('chargement des albums');
-    }
-  }, [loadingArtists]);
-
-  useEffect(() => {
-    if (loadingSingle && !loadingAlbum) {
-      getAlbums(artists, setSingle, setLoadingSingle, 'single');
-      setLoadingProgress('chargement des singles');
-      console.log('chargement des singles');
-    }
-  }, [loadingAlbum]);
+function Feeds(props) {
+  const classes = useStyles();
+  const [displayList, setDisplayList] = useState('grid');
 
   const handleDisplayList = (event, value) => {
     if (value) {
@@ -162,7 +260,7 @@ function Feeds() {
     }
   };
 
-  const toggleDisplayList = (
+  const resultList = (
     <ToggleButtonGroup
       value={displayList}
       exclusive
@@ -174,135 +272,26 @@ function Feeds() {
         value="list"
         checked={displayList === 'list'}
       >
-        <ListIcon className={classes.icon}/>
+        <ListIcon className={classes.icon} />
       </ToggleButton>
       <ToggleButton
         className={classes.toggleButton}
         value="grid"
         checked={displayList === 'grid'}
       >
-        <GridIcon className={classes.icon}/>
+        <GridIcon className={classes.icon} />
       </ToggleButton>
     </ToggleButtonGroup>
   );
 
-  const ListCards = props => (
-    <Grid container className={classes.grid} spacing={4}>
-      {props.list &&
-        Array.from(props.list).map(album => (
-          <Grid item key={album.id} xs={12} sm={6} md={4}>
-            <Card className={classes.card}>
-              <button type="button" onClick={() => putPlayMusic(album.uri)}>
-                <CardMedia
-                  className={classes.cardMedia}
-                  image={album.images[1].url}
-                />
-              </button>
-              <CardContent className={classes.cardContent}>
-                <Typography gutterBottom variant="h5" component="h2">
-                  <a
-                    className={classes.title}
-                    href={album.external_urls.spotify}
-                  >
-                    {album.name}
-                  </a>
-                </Typography>
-                <Typography component="span">
-                  Artiste(s) :
-                  {Array.from(album.artists).map(artist => (
-                    <div>
-                      <a href={artist.external_urls.spotify}>{artist.name}</a>
-                      <br />
-                    </div>
-                  ))}
-                </Typography>
-              </CardContent>
-              <CardActions className={classes.cardFooter}>
-                <Button color="primary" onClick={() => putPlayMusic(album.uri)}>
-                  play
-                </Button>
-                <Typography
-                  component="span"
-                  className={classes.cardFooterInner}
-                >
-                  {new Date(album.release_date).toLocaleDateString('fr-FR', {
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </Typography>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-    </Grid>
-  );
-
-  const ListItems = props => (
-    <List className={classes.root}>
-      {props.list &&
-        Array.from(props.list).map(album => (
-          <ListItem key={album.id} className={classes.listItem} disableGutters>
-            <ListItemAvatar className={classes.itemImg}>
-              <a href={album.external_urls.spotify}>
-                <CardMedia
-                  className={classes.cardMedia}
-                  image={album.images[1].url}
-                  title="Image title"
-                />
-              </a>
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                <React.Fragment>
-                  <a
-                    className={classes.title}
-                    href={album.external_urls.spotify}
-                  >
-                    {album.name}
-                  </a>
-                </React.Fragment>
-              }
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    className={classes.inline}
-                    color="textPrimary"
-                  >
-                    {Array.from(album.artists).map((artist, index) => (
-                      <span>
-                        <a href={artist.external_urls.spotify}>{artist.name}</a>
-                        {index < album.artists.length - 1 && ', '}
-                      </span>
-                    ))}
-                  </Typography>
-                  <br />
-                  <span className={classes.itemDate}>
-                    {new Date(album.release_date).toLocaleDateString('fr-FR', {
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </span>
-                </React.Fragment>
-              }
-            />
-            <button type="button" onClick={() => putPlayMusic(album.uri)}>
-              <PlayIcon color="primary" className={classes.playButton} />
-            </button>
-          </ListItem>
-        ))}
-    </List>
-  );
-
   return (
     <div>
-      {loadingSingle ? (
+      {!props.data.loaded ? (
         <Container className={classes.loadingGrid}>
           <Container className={classes.loader}>
             <CircularProgress color="#1DB954" size={100} padding={100} />
           </Container>
-          {loadingProgress}
+          {`chargement des ${props.data.loadingProgress}`}
         </Container>
       ) : (
         <Container className={classes.cardGrid} maxWidth="md">
@@ -310,25 +299,25 @@ function Feeds() {
             <h1>Nouvelles Sorties</h1>
           </Typography>
           <div className={classes.header}>
-            <h2>Nouveaux Albums ({albums.length})</h2>
-            {toggleDisplayList}
+            <h2>Nouveaux Albums ({props.data.albums.length})</h2>
+            {resultList}
           </div>
           <hr />
           {displayList === 'grid' ? (
-            <ListCards list={albums} />
+            <ListCards list={props.data.albums} max={3} />
           ) : (
-            <ListItems list={albums} />
+            <ListItems list={props.data.albums} />
           )}
 
           <div className={classes.header}>
-            <h2>Nouveaux Singles ({single.length})</h2>
-            {toggleDisplayList}
+            <h2>Nouveaux Singles ({props.data.singles.length})</h2>
+            {resultList}
           </div>
           <hr />
           {displayList === 'grid' ? (
-            <ListCards list={single} />
+            <ListCards list={props.data.singles} />
           ) : (
-            <ListItems list={single} />
+            <ListItems list={props.data.singles} />
           )}
         </Container>
       )}
