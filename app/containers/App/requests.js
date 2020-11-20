@@ -43,14 +43,14 @@ export function getArtists(set, next = '', loaded = []) {
     });
 }
 
-export function getAlbums(artists, set) {
+export function getAlbums(artists, set, loadedAlbums = []) {
   set(prevState => ({
     ...prevState,
     loadingProgress: 'albums',
     loading: true,
   }));
 
-  const list = [];
+  const list = loadedAlbums;
   let loaded = 0;
   const errors = [];
 
@@ -97,18 +97,12 @@ export function getAlbums(artists, set) {
             console.log('RELOAD ERRORS');
             set(prevState => ({
               ...prevState,
-              loadingProgress: (
-                <span>
-                  chargement des albums
-                  <br />
-                  la première initialisation peut prendre jusqu&apos;à 30
-                  secondes
-                </span>
-              ),
+              loadingProgress:
+                "albums, la première initialisation peut prendre jusqu'à 1 minute",
             }));
             timeout(2500).then(() => {
               console.log('reload');
-             // getAlbums(errors, set, type);
+              getAlbums(errors, set, list);
             });
           } else {
             console.log(list);
@@ -124,14 +118,14 @@ export function getAlbums(artists, set) {
   });
 }
 
-export function getSingles(artists, set) {
+export function getSingles(artists, set, loadSingle = []) {
   set(prevState => ({
     ...prevState,
     loadingProgress: 'albums',
     loading: true,
   }));
 
-  const list = [];
+  const list = loadSingle;
   let loaded = 0;
   const errors = [];
 
@@ -178,18 +172,12 @@ export function getSingles(artists, set) {
             console.log('RELOAD ERRORS');
             set(prevState => ({
               ...prevState,
-              loadingProgress: (
-                <span>
-                  chargement des singles
-                  <br />
-                  la première initialisation peut prendre jusqu&apos;à 30
-                  secondes
-                </span>
-              ),
+              loadingProgress:
+                "singles, la première initialisation peut prendre jusqu'à 1 minute",
             }));
             timeout(2500).then(() => {
               console.log('reload');
-             // getAlbums(errors, set, type);
+              getSingles(errors, set, list);
             });
           } else {
             console.log(list);

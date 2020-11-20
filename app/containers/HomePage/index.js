@@ -6,41 +6,31 @@
  */
 
 import React from 'react';
+import { Container, Typography } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 import Loader from '../../components/Loader';
-import LoginButton from '../../components/LoginButton';
 import ListItems from '../../components/ListItems';
-import { Typography } from '@material-ui/core';
 
-function Homi(props) {
+export default function HomePage(props) {
   return (
-    <div>
+    <Container>
       <Typography color="primary">
         <h1>Nouvelles Sorties</h1>
       </Typography>
       {!props.data.loaded ? (
         <Loader text={props.data.loadingProgress} />
       ) : (
-        <ListItems data={props.data} max={3} />
+        <div>
+          <ListItems name="albums" list={props.data.albums} max={3} />
+          <Link to="/Albums">
+            <h2>Tout voir</h2>
+          </Link>
+          <ListItems name="singles" list={props.data.singles} max={3} />
+          <Link to="/Singles">
+            <h2>Tout voir</h2>
+          </Link>
+        </div>
       )}
-    </div>
-  );
-}
-
-export default function HomePage(props) {
-  const connected =
-    localStorage.getItem('token') && localStorage.getItem('token') !== '';
-
-  return (
-    <div>
-      {connected ? (
-        <Homi data={props.data} />
-      ) : (
-        <h1>
-          Connectez-vous avec votre compte Spotify pour commencer à utiliser
-          SpotifyActivity
-          <LoginButton />
-        </h1>
-      )}
-    </div>
+    </Container>
   );
 }

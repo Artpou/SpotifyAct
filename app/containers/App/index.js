@@ -20,6 +20,8 @@ import { getArtists, getAlbums, getSingles } from './requests';
 
 import GlobalStyle from '../../global-styles';
 import ResponsiveDrawer from '../Template/ResponsiveDrawer';
+import LoginButton from '../../components/LoginButton';
+import { Container, makeStyles } from '@material-ui/core';
 
 const theme = createMuiTheme({
   palette: {
@@ -41,7 +43,16 @@ const theme = createMuiTheme({
   },
 });
 
+const useStyles = makeStyles(theme => ({
+  main: {
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+}));
+
 export default function App() {
+  const classes = useStyles();
   const [data, setData] = useState({
     artists: [],
     albums: [],
@@ -82,18 +93,31 @@ export default function App() {
   }, [data]);
 
   const connected =
-    localStorage.getItem('token') && localStorage.getItem('token') !== '';
+    window.location.pathname === '/callback' ||
+    (localStorage.getItem('token') && localStorage.getItem('token') !== '');
 
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <ResponsiveDrawer connected={connected}>
           <GlobalStyle />
-          <Switch>
-            <Route exact path="/" render={props => <HomePage data={data} />} />
-            <Route exact path="/callback" component={CallbackPage} />
-            <Route component={NotFoundPage} />
-          </Switch>
+          {connected ? (
+            <Switch>
+              <Route
+                exact
+                path="/"
+                render={props => <HomePage data={data} />}
+              />
+              <Route exact path="/callback" component={CallbackPage} />
+              <Route component={NotFoundPage} />
+            </Switch>
+          ) : (
+            <Container className={classes.main}>
+              Connectez-vous avec votre compte Spotify pour commencer à utiliser
+              SpotifyActivity
+              <LoginButton />
+            </Container>
+          )}
         </ResponsiveDrawer>
       </BrowserRouter>
     </ThemeProvider>

@@ -65,28 +65,17 @@ export default function ListItems(props) {
   );
 
   return (
-    <Container className={classes.cardGrid} maxWidth="md">
+    <div className={classes.cardGrid} maxWidth="md">
       <div className={classes.header}>
-        <h2>Nouveaux Albums ({props.data.albums.length})</h2>
+        <h2>Nouveaux {props.name} ({props.list.length})</h2>
         {resultList}
       </div>
       <hr />
       {displayList === 'grid' ? (
-        <ListCards list={props.data.albums} max={props.max} />
+        <ListCards list={props.list} max={props.max} />
       ) : (
-        <ListRows list={props.data.albums} max={props.max} />
+        <ListRows list={props.list} max={props.max} />
       )}
-
-      <div className={classes.header}>
-        <h2>Nouveaux Singles ({props.data.singles.length})</h2>
-        {resultList}
-      </div>
-      <hr />
-      {displayList === 'grid' ? (
-        <ListCards list={props.data.singles} max={props.max} />
-      ) : (
-        <ListRows list={props.data.singles} max={props.max} />
-      )}
-    </Container>
+    </div>
   );
 }
