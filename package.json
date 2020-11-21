@@ -1,5 +1,5 @@
 {
-  "name": "Spotify Activity",
+  "name": "spotify-activity",
   "version": "4.0.0",
   "description": "Website for new albums and track based on Spotify API",
   "repository": {
