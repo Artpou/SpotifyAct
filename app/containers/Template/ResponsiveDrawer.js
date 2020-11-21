@@ -109,7 +109,7 @@ function ResponsiveDrawer(props) {
     <div>
       {props.connected && (
         <List>
-          {['Home', 'Albums', 'Singles', 'Amis', 'Parametres'].map(
+          {['Home', 'Albums', 'Singles'].map(
             (text, index) => (
               <Link
                 to={text === 'Home' ? '/' : `/${text}`}
