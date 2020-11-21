@@ -11,19 +11,18 @@ import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
 import HomePage from 'containers/HomePage/Loadable';
 import CallbackPage from 'containers/CallbackPage/Loadable';
-import NotFoundPage from 'containers/NotFoundPage/Loadable';
+import NotFoundPage from 'containers/NotFoundPage';
 
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 
-import { Container, makeStyles } from '@material-ui/core';
-import { getUser ,getArtists, getAlbums, getSingles } from './requests';
-
+import { makeStyles } from '@material-ui/core';
+import { getUser, getArtists, getAlbums, getSingles } from './requests';
 import GlobalStyle from '../../global-styles';
 import ResponsiveDrawer from '../Template/ResponsiveDrawer';
-import LoginButton from '../../components/LoginButton';
 import AlbumsPage from '../AlbumsPage';
 import SinglesPage from '../SinglesPage';
+import ConnexionPage from '../ConnexionPage';
 
 const theme = createMuiTheme({
   palette: {
@@ -55,6 +54,10 @@ const useStyles = makeStyles({
 
 export default function App() {
   const classes = useStyles();
+  const param = window.location.pathname;
+  const connected =
+    localStorage.getItem('token') && localStorage.getItem('token') !== '';
+
   const [data, setData] = useState({
     user: [],
     artists: [],
@@ -66,7 +69,13 @@ export default function App() {
   });
 
   useEffect(() => {
-    if (!data.loading && !data.loaded) {
+    console.log(window.location.search);
+    if (
+      connected &&
+      window.location.pathname !== '/callback' &&
+      !data.loading &&
+      !data.loaded
+    ) {
       console.log(`load ${data.loadingProgress}`);
       switch (data.loadingProgress) {
         case 'user':
@@ -93,15 +102,15 @@ export default function App() {
           }));
           break;
 
+        case 'error':
+          console.log('error');
+          break;
+
         default:
           break;
       }
     }
   }, [data]);
-
-  const connected =
-    window.location.pathname === '/callback' ||
-    (localStorage.getItem('token') && localStorage.getItem('token') !== '');
 
   return (
     <ThemeProvider theme={theme}>
@@ -111,7 +120,6 @@ export default function App() {
           {connected ? (
             <Switch>
               <Route exact path="/" render={() => <HomePage data={data} />} />
-              <Route exact path="/callback" component={CallbackPage} />
               <Route
                 exact
                 path="/Albums"
@@ -125,11 +133,10 @@ export default function App() {
               <Route component={NotFoundPage} />
             </Switch>
           ) : (
-            <Container className={classes.main}>
-              Connectez-vous avec votre compte Spotify pour commencer à utiliser
-              SpotifyActivity
-              <LoginButton />
-            </Container>
+            <Switch>
+              <Route exact path="/callback" component={CallbackPage} />
+              <Route component={() => <ConnexionPage />} />
+            </Switch>
           )}
         </ResponsiveDrawer>
       </BrowserRouter>

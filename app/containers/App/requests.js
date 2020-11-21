@@ -5,7 +5,13 @@ function timeout(ms) {
 }
 
 function reloadToken(set) {
-  localStorage.getItem('token');
+  //console.log(localStorage.getItem('token'));
+  //document.location.replace(`/?code=${localStorage.getItem('refresh_token')}`);
+  set(prevState => ({
+    ...prevState,
+    loadingProgress: 'error',
+    loading: false,
+  }));
 }
 
 export function getUser(set) {
@@ -30,7 +36,8 @@ export function getUser(set) {
         loading: false,
       }));
     })
-    .catch(error => {
+    .catch(() => {
+      console.log("try to reload token");
       reloadToken(set);
     });
 }

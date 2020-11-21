@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
@@ -13,7 +13,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { BrowserRouter ,useLocation, Link, useHistory } from 'react-router-dom';
+import { Link, useLocation, withRouter } from 'react-router-dom';
 import LoginButton from '../../components/LoginButton';
 import LogoutButton from '../../components/LogoutButton';
 
@@ -86,22 +86,23 @@ function ResponsiveDrawer(props) {
   const theme = useTheme();
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [location, setLocation] = React.useState(
-    window.location.pathname.split('/')[1],
-  );
+  const [location, setLocation] = React.useState();
 
   const ConnectionButton = props.connected ? <LogoutButton /> : <LoginButton />;
-  
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  
-  const handleChangeLink = (e) => {
-    console.log(e.to);
-  };
+
+  useEffect(()=> {
+    setLocation(props.history.location.pathname);
+    props.history.listen((location, action) => {
+      setLocation(location.pathname);
+    });
+  },[]);
 
   function isCurrentPath(value) {
-    return location === value;
+    return value === 'Home' ? location === '/' : location === `/${value}`;
   }
 
   const drawer = (
@@ -209,4 +210,4 @@ function ResponsiveDrawer(props) {
   );
 }
 
-export default ResponsiveDrawer;
+export default withRouter(ResponsiveDrawer);

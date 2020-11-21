@@ -32,7 +32,7 @@ function Loader(props) {
       <Container className={classes.loader}>
         <CircularProgress color="#1DB954" size={100} padding={100} />
       </Container>
-      {`chargement des ${props.text}`}
+      {props.text}
     </Container>
   );
 }
