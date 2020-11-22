@@ -19,8 +19,10 @@ import React from 'react';
 // import styled from 'styled-components';
 
 import { FormattedMessage } from 'react-intl';
+import PlayIcon from '@material-ui/icons/PlayCircleFilled';
 import { SendNotificationContext } from '../../containers/App';
 import { putPlayMusic } from '../../utils/requests';
+import { PlayCircleFilled } from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -51,6 +53,12 @@ const useStyles = makeStyles(theme => ({
   title: {
     color: '#fff',
   },
+  cardNew: {
+    margin: '10px 0',
+    padding: '10px 2px',
+    backgroundColor: '#181818',
+    color: '#fff',
+  },
   cardFooter: {
     justifyContent: 'space-between',
     padding: '12px',
@@ -59,6 +67,14 @@ const useStyles = makeStyles(theme => ({
     marginRight: '8px',
     display: 'flex',
     alignContent: 'space-between',
+  },
+  btnNew: {
+    width: '100%',
+    textAlign: 'justify',
+  },
+  playBtn: {
+    color: '#1ED760',
+    marginRight: '8px',
   },
 }));
 
@@ -88,9 +104,40 @@ function ListItemsArtists(props) {
         tmp.unshift(item);
       }
     });
-    
     setArtists(tmp);
   }, []);
+
+  function AlbumCard(props) {
+    const album = props.data.albums.find(obj => obj.artists[0].id === props.id);
+    return (
+      <button
+        className={classes.btnNew}
+        type="button"
+        onClick={() => putPlayMusic(album.uri)}
+      >
+        <Card className={classes.cardNew}>
+          <PlayIcon className={classes.playBtn} />
+          Nouvelle album
+        </Card>
+      </button>
+    );
+  }
+
+  function SingleCard(props) {
+    const single = props.data.singles.find(obj => obj.artists[0].id === props.id);
+    return (
+      <button
+        className={classes.btnNew}
+        type="button"
+        onClick={() => putPlayMusic(single.uri)}
+      >
+        <Card className={classes.cardNew}>
+          <PlayIcon className={classes.playBtn} />
+          Nouveau single
+        </Card>
+      </button>
+    );
+  }
 
   return (
     <Grid container className={classes.grid} spacing={2}>
@@ -123,11 +170,11 @@ function ListItemsArtists(props) {
                   </a>
                 </Typography>
                 {props.data.albums.some(e => e.artists[0].id === artist.id) && (
-                  <Card>Nouvelle Album !</Card>
+                  <AlbumCard data={props.data} id={artist.id} />
                 )}
-                {props.data.singles.some(
-                  e => e.artists[0].id === artist.id,
-                ) && <Card>Nouveau Single !</Card>}
+                {props.data.singles.some(e => e.artists[0].id === artist.id) && (
+                  <SingleCard data={props.data} id={artist.id} />
+                )}
               </CardContent>
               <CardActions className={classes.cardFooter}>
                 <Button
@@ -143,10 +190,12 @@ function ListItemsArtists(props) {
                 >
                   play
                 </Button>
-                {artist.followers.total
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}{' '}
-                followers
+                <Typography style={{ textAlign: 'end' }}>
+                  {artist.followers.total
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}{' '}
+                  followers
+                </Typography>
               </CardActions>
             </Card>
           </Grid>

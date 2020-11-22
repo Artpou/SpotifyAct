@@ -43,7 +43,7 @@ export default function HomePage(props) {
   }
 
   return !props.data.loaded ? (
-    <Loader text={props.data.loadingProgress} />
+    <Loader />
   ) : (
     <Home />
   );

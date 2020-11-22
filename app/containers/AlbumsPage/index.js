@@ -11,7 +11,7 @@ import ListItems from '../../components/ListItems';
 
 export default function AlbumsPage(props) {
   return !props.data.loaded ? (
-    <Loader text={props.data.loadingProgress} />
+    <Loader />
   ) : (
     <div>
       <ListItems name="albums" list={props.data.albums} />

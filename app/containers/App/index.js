@@ -17,7 +17,6 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 
 import { Container, makeStyles } from '@material-ui/core';
-import { getUser, getArtists, getAlbums, getSingles } from './requests';
 import GlobalStyle from '../../global-styles';
 import ResponsiveDrawer from './ResponsiveDrawer';
 import AlbumsPage from '../AlbumsPage';
@@ -25,7 +24,12 @@ import SinglesPage from '../SinglesPage';
 import ArtistsPage from '../ArtistsPage';
 import ConnexionPage from '../ConnexionPage';
 import NotificationBar from '../../components/NotificationBar';
-import { NotificationProvider, useNotificationState } from './NotificationContext';
+import {
+  NotificationProvider,
+  useNotificationState,
+} from './NotificationContext';
+
+import { getUser, getArtists, getAlbums, getSingles } from '../../utils/requests';
 
 const theme = createMuiTheme({
   palette: {
@@ -63,62 +67,50 @@ export default function App() {
   });
 
   const connected =
-  sessionStorage.getItem('token') && sessionStorage.getItem('token') !== '';
+    sessionStorage.getItem('token') && sessionStorage.getItem('token') !== '';
 
   const [data, setData] = useState({
     user: [],
     artists: [],
     albums: [],
     singles: [],
-    notification: 'test',
-    loading: false,
     loadingProgress: 'user',
     loaded: false,
   });
 
   useEffect(() => {
-    // console.log(data);
-    if (
-      connected &&
-      window.location.pathname !== '/callback' &&
-      !data.loading &&
-      !data.loaded
-    ) {
-      console.log(`load ${data.loadingProgress}`);
-      switch (data.loadingProgress) {
-        case 'user':
-          getUser(setData, setNotification);
-          break;
-
-        case 'artists':
-          getArtists(setData);
-          break;
-
-        case 'albums':
-          getAlbums(data.artists, setData, setNotification);
-          break;
-
-        case 'single':
-          getSingles(data.artists, setData, setNotification);
-          break;
-
-        case 'finish':
+    if (connected && window.location.pathname !== '/callback') {
+      getUser().then(user => {
+        console.log(user);
+        setData(prevState => ({
+          ...prevState,
+          user,
+        }));
+        getArtists().then(artists => {
+          console.log(artists);
           setData(prevState => ({
             ...prevState,
-            loaded: true,
+            artists,
           }));
-          setNotification({type: 'success', text: 'chargement terminé !'})
-          break;
-
-        case 'error':
-          console.log('error');
-          break;
-
-        default:
-          break;
-      }
+          getAlbums(artists, setNotification).then(albums => {
+            console.log(albums);
+            setData(prevState => ({
+              ...prevState,
+              albums,
+            }));
+            getSingles(artists, setNotification).then(singles => {
+              console.log(singles);
+              setData(prevState => ({
+                ...prevState,
+                singles,
+                loaded: true,
+              }));
+            });
+          });
+        });
+      });
     }
-  }, [data]);
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>

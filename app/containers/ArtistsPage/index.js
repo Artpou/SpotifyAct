@@ -12,7 +12,7 @@ import ListItemsArtists from '../../components/ListItemsArtists';
 
 export default function ArtistsPage(props) {
   return !props.data.loaded ? (
-    <Loader text={props.data.loadingProgress} />
+    <Loader />
   ) : (
     <ListItemsArtists data={props.data}/>
   );
