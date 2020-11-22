@@ -38,7 +38,8 @@ export function getUser(set) {
       }));
     })
     .catch(() => {
-      reloadToken(set);
+      //reloadToken(set);
+      console.error('TOKEN');
     });
 }
 

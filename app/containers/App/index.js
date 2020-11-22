@@ -78,7 +78,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    //console.log(setNotification);
+    console.log(data);
     if (
       connected &&
       window.location.pathname !== '/callback' &&
