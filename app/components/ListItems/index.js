@@ -14,7 +14,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { Link } from 'react-router-dom';
 import ListCards from '../ListItemsCard';
 import ListRows from '../ListItemsRow';
-import { Typography } from '@material-ui/core';
+import { Typography, useMediaQuery } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -49,7 +49,12 @@ const useStyles = makeStyles(theme => ({
 
 export default function ListItems(props) {
   const classes = useStyles();
+  const matches = useMediaQuery('(min-width:600px)');
   const [displayList, setDisplayList] = useState('grid');
+  
+  React.useEffect(() => {
+    setDisplayList(matches ? 'grid' : 'list');
+  }, [matches]);
 
   const handleDisplayList = (event, value) => {
     if (value) {

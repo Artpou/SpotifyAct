@@ -10,8 +10,17 @@ import {
   CardActions,
   CardContent,
   CardMedia,
+  FormControl,
+  FormHelperText,
   Grid,
+  IconButton,
+  InputBase,
+  InputLabel,
   makeStyles,
+  MenuItem,
+  Paper,
+  Select,
+  TextField,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
@@ -20,11 +29,24 @@ import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import PlayIcon from '@material-ui/icons/PlayCircleFilled';
-import { PlayCircleFilled } from '@material-ui/icons';
+import { PlayCircleFilled, Search } from '@material-ui/icons';
 import { SendNotificationContext } from '../../containers/App';
 import { putPlayMusic } from '../../utils/requests';
 
 const useStyles = makeStyles(theme => ({
+  topbar: {
+    display: 'flex',
+  },
+  search: {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'space-between',
+    color: '#fff',
+  },
+  filter: {
+    display: 'flex',
+    width: '200px',
+  },
   grid: {
     padding: '20px 0',
   },
@@ -156,67 +178,94 @@ function ListItemsArtists(props) {
   }
 
   return (
-    <Grid container className={classes.grid} spacing={2}>
-      {artists &&
-        Array.from(artists).map(artist => (
-          <Grid
-            item
-            key={artist.id}
-            xs={12}
-            sm={12}
-            md={4}
-            lg={props.reduced ? 4 : 3}
-            xl={props.reduced ? 4 : 2}
+    <div>
+      <div className={classes.topbar}>
+        <TextField
+          id="standard-basic"
+          label="Rechercher un artiste"
+          className={classes.search}
+        >
+          <IconButton
+            type="submit"
+            className={classes.iconButton}
+            aria-label="search"
           >
-            <Card className={classes.card}>
-              <a href={artist.external_urls.spotify}>
-                <CardMedia
-                  className={classes.cardMedia}
-                  height={300}
-                  image={artist.images[1].url}
-                />
-              </a>
-              <CardContent className={classes.cardContent}>
-                <Typography>
-                  <a
-                    className={classes.title}
-                    href={artist.external_urls.spotify}
+            <Search />
+          </IconButton>
+        </TextField>
+        <FormControl className={classes.filter}>
+          <InputLabel shrink id="demo-simple-select-placeholder-label-label">
+            Age
+          </InputLabel>
+          <Select value={1}>
+            <MenuItem value={1}>Nouveautés</MenuItem>
+            <MenuItem value={2}>Nom</MenuItem>
+            <MenuItem value={3}>Date d'ajout</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+      <Grid container className={classes.grid} spacing={2}>
+        {artists &&
+          Array.from(artists).map(artist => (
+            <Grid
+              item
+              key={artist.id}
+              xs={12}
+              sm={12}
+              md={4}
+              lg={props.reduced ? 4 : 3}
+              xl={props.reduced ? 4 : 2}
+            >
+              <Card className={classes.card}>
+                <a href={artist.external_urls.spotify}>
+                  <CardMedia
+                    className={classes.cardMedia}
+                    height={300}
+                    image={artist.images[1].url}
+                  />
+                </a>
+                <CardContent className={classes.cardContent}>
+                  <Typography>
+                    <a
+                      className={classes.title}
+                      href={artist.external_urls.spotify}
+                    >
+                      {artist.name}
+                    </a>
+                  </Typography>
+                  {props.data.albums.some(
+                    e => e.artists[0].id === artist.id,
+                  ) && <AlbumCard data={props.data} id={artist.id} />}
+                  {props.data.singles.some(
+                    e => e.artists[0].id === artist.id,
+                  ) && <SingleCard data={props.data} id={artist.id} />}
+                </CardContent>
+                <CardActions className={classes.cardFooter}>
+                  <Button
+                    color="primary"
+                    onClick={() =>
+                      putPlayMusic(album.uri, setNotification).then(_res =>
+                        setNotification({
+                          type: 'play',
+                          text: `${album.name} de ${album.artists[0].name}`,
+                        }),
+                      )
+                    }
                   >
-                    {artist.name}
-                  </a>
-                </Typography>
-                {props.data.albums.some(e => e.artists[0].id === artist.id) && (
-                  <AlbumCard data={props.data} id={artist.id} />
-                )}
-                {props.data.singles.some(
-                  e => e.artists[0].id === artist.id,
-                ) && <SingleCard data={props.data} id={artist.id} />}
-              </CardContent>
-              <CardActions className={classes.cardFooter}>
-                <Button
-                  color="primary"
-                  onClick={() =>
-                    putPlayMusic(album.uri, setNotification).then(res =>
-                      setNotification({
-                        type: 'play',
-                        text: `${album.name} de ${album.artists[0].name}`,
-                      }),
-                    )
-                  }
-                >
-                  play
-                </Button>
-                <Typography style={{ textAlign: 'end' }}>
-                  {artist.followers.total
-                    .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}{' '}
-                  followers
-                </Typography>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-    </Grid>
+                    play
+                  </Button>
+                  <Typography style={{ textAlign: 'end' }}>
+                    {artist.followers.total
+                      .toString()
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}{' '}
+                    followers
+                  </Typography>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+      </Grid>
+    </div>
   );
 }
 
