@@ -20,9 +20,9 @@ import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import PlayIcon from '@material-ui/icons/PlayCircleFilled';
+import { PlayCircleFilled } from '@material-ui/icons';
 import { SendNotificationContext } from '../../containers/App';
 import { putPlayMusic } from '../../utils/requests';
-import { PlayCircleFilled } from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -113,7 +113,14 @@ function ListItemsArtists(props) {
       <button
         className={classes.btnNew}
         type="button"
-        onClick={() => putPlayMusic(album.uri)}
+        onClick={() =>
+          putPlayMusic(album.uri).then(res =>
+            setNotification({
+              type: 'play',
+              text: `${album.name} de ${album.artists[0].name}`,
+            }),
+          )
+        }
       >
         <Card className={classes.cardNew}>
           <PlayIcon className={classes.playBtn} />
@@ -124,12 +131,21 @@ function ListItemsArtists(props) {
   }
 
   function SingleCard(props) {
-    const single = props.data.singles.find(obj => obj.artists[0].id === props.id);
+    const single = props.data.singles.find(
+      obj => obj.artists[0].id === props.id,
+    );
     return (
       <button
         className={classes.btnNew}
         type="button"
-        onClick={() => putPlayMusic(single.uri)}
+        onClick={() =>
+          putPlayMusic(single.uri).then(res =>
+            setNotification({
+              type: 'play',
+              text: `${single.name} de ${single.artists[0].name}`,
+            }),
+          )
+        }
       >
         <Card className={classes.cardNew}>
           <PlayIcon className={classes.playBtn} />
@@ -172,21 +188,21 @@ function ListItemsArtists(props) {
                 {props.data.albums.some(e => e.artists[0].id === artist.id) && (
                   <AlbumCard data={props.data} id={artist.id} />
                 )}
-                {props.data.singles.some(e => e.artists[0].id === artist.id) && (
-                  <SingleCard data={props.data} id={artist.id} />
-                )}
+                {props.data.singles.some(
+                  e => e.artists[0].id === artist.id,
+                ) && <SingleCard data={props.data} id={artist.id} />}
               </CardContent>
               <CardActions className={classes.cardFooter}>
                 <Button
                   color="primary"
-                  /* onClick={() =>
-                      putPlayMusic(album.uri, setNotification).then(res =>
-                        setNotification({
-                          type: 'play',
-                          text: `${album.name} de ${album.artists[0].name}`,
-                        }),
-                      )
-                    } */
+                  onClick={() =>
+                    putPlayMusic(album.uri, setNotification).then(res =>
+                      setNotification({
+                        type: 'play',
+                        text: `${album.name} de ${album.artists[0].name}`,
+                      }),
+                    )
+                  }
                 >
                   play
                 </Button>

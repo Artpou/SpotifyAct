@@ -82,7 +82,14 @@ function ListItemsCard(props) {
               <Card className={classes.card}>
                 <button
                   type="button"
-                  onClick={() => putPlayMusic(album.uri, props.data)}
+                  onClick={() =>
+                    putPlayMusic(album.uri).then(res =>
+                      setNotification({
+                        type: 'play',
+                        text: `${album.name} de ${album.artists[0].name}`,
+                      }),
+                    )
+                  }
                 >
                   <CardMedia
                     className={classes.cardMedia}
