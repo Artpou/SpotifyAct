@@ -15,6 +15,10 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Link, useLocation, withRouter } from 'react-router-dom';
 import { Button } from '@material-ui/core';
+import SingleIcon from '@material-ui/icons/MusicNote';
+import HomeIcon from '@material-ui/icons/Home';
+import AlbumIcon from '@material-ui/icons/Album';
+import ArtistsIcon from '@material-ui/icons/Group';
 import LoginButton from '../../components/LoginButton';
 import LogoutButton from '../../components/LogoutButton';
 
@@ -102,35 +106,42 @@ function ResponsiveDrawer(props) {
   }, []);
 
   function isCurrentPath(value) {
-    return value === 'Home' ? location === '/' : location === `/${value}`;
+    return location === value;
   }
+
+  const drawerItems = [
+    { name: 'Accueil', link: '/', icon: <HomeIcon /> },
+    { name: 'Albums', link: '/Albums', icon: <AlbumIcon /> },
+    { name: 'Singles', link: '/Singles', icon: <SingleIcon /> },
+    { name: 'Artistes suivies', link: '/Artists', icon: <ArtistsIcon /> },
+  ];
 
   const drawer = (
     <div>
       {props.connected && (
         <List>
-          {['Home', 'Albums', 'Singles'].map((text, index) => (
+          {drawerItems.map(item => (
             <Link
-              to={text === 'Home' ? '/' : `/${text}`}
-              style={{ textDecoration: 'none' }}
-              onClick={() => setLocation(text)}
+              to={item.link}
+              style={{ itemDecoration: 'none' }}
+              onClick={() => setLocation(item.link)}
             >
-              <ListItem key={text}>
-                {isCurrentPath(text) && (
+              <ListItem key={item.link}>
+                {isCurrentPath(item.link) && (
                   <span className={classes.selectedBand} />
                 )}
                 <ListItemIcon
                   className={
-                    isCurrentPath(text) ? classes.selected : classes.white
+                    isCurrentPath(item.link) ? classes.selected : classes.white
                   }
                 >
-                  <AccountBox />
+                  {item.icon}
                 </ListItemIcon>
                 <ListItemText
                   className={
-                    isCurrentPath(text) ? classes.selected : classes.white
+                    isCurrentPath(item.link) ? classes.selected : classes.white
                   }
-                  primary={text}
+                  primary={item.name}
                 />
               </ListItem>
             </Link>

@@ -22,6 +22,7 @@ import GlobalStyle from '../../global-styles';
 import ResponsiveDrawer from './ResponsiveDrawer';
 import AlbumsPage from '../AlbumsPage';
 import SinglesPage from '../SinglesPage';
+import ArtistsPage from '../ArtistsPage';
 import ConnexionPage from '../ConnexionPage';
 import NotificationBar from '../../components/NotificationBar';
 import { NotificationProvider, useNotificationState } from './NotificationContext';
@@ -76,7 +77,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    console.log(data);
+    // console.log(data);
     if (
       connected &&
       window.location.pathname !== '/callback' &&
@@ -143,6 +144,11 @@ export default function App() {
                     exact
                     path="/Singles"
                     render={() => <SinglesPage data={data} />}
+                  />
+                  <Route
+                    exact
+                    path="/Artists"
+                    render={() => <ArtistsPage data={data} />}
                   />
                   <Route component={NotFoundPage} />
                 </Switch>

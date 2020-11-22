@@ -64,7 +64,7 @@ const useStyles = makeStyles(theme => ({
 function ListItemsCard(props) {
   const classes = useStyles();
   const setNotification = React.useContext(SendNotificationContext);
-
+  console.log(props.list);
   return (
     <Grid container className={classes.grid} spacing={2}>
       {props.list &&
