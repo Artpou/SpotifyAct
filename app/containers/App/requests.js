@@ -6,8 +6,8 @@ function timeout(ms) {
 }
 
 function reloadToken(set) {
-  // console.log(localStorage.getItem('token'));
-  // document.location.replace(`/?code=${localStorage.getItem('refresh_token')}`);
+  // console.log(sessionStorage.getItem('token'));
+  // document.location.replace(`/?code=${sessionStorage.getItem('refresh_token')}`);
   set(prevState => ({
     ...prevState,
     loadingProgress: 'error',
@@ -25,7 +25,7 @@ export function getUser(set) {
   axios
     .get(url, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
       },
     })
     .then(res => {
@@ -57,7 +57,7 @@ export function getArtists(set, next = '', loaded = []) {
   axios
     .get(url, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
       },
     })
     .then(res => {
@@ -99,7 +99,7 @@ export function getAlbums(artists, set, setNotification, loadedAlbums = []) {
     axios
       .get(url, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         },
       })
       .then(res => {
@@ -170,7 +170,7 @@ export function getSingles(artists, set, setNotification, loadSingle = []) {
     axios
       .get(url, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         },
       })
       .then(res => {

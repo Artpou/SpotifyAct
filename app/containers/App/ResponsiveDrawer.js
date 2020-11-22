@@ -16,6 +16,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Link, useLocation, withRouter } from 'react-router-dom';
 import LoginButton from '../../components/LoginButton';
 import LogoutButton from '../../components/LogoutButton';
+import { Button } from '@material-ui/core';
 
 export const drawerWidth = 240;
 
@@ -93,12 +94,12 @@ function ResponsiveDrawer(props) {
     setMobileOpen(!mobileOpen);
   };
 
-  useEffect(()=> {
+  useEffect(() => {
     setLocation(props.history.location.pathname);
     props.history.listen((location, action) => {
       setLocation(location.pathname);
     });
-  },[]);
+  }, []);
 
   function isCurrentPath(value) {
     return value === 'Home' ? location === '/' : location === `/${value}`;
@@ -108,34 +109,32 @@ function ResponsiveDrawer(props) {
     <div>
       {props.connected && (
         <List>
-          {['Home', 'Albums', 'Singles'].map(
-            (text, index) => (
-              <Link
-                to={text === 'Home' ? '/' : `/${text}`}
-                style={{ textDecoration: 'none' }}
-                onClick={() => setLocation(text)}
-              >
-                <ListItem key={text}>
-                  {isCurrentPath(text) && (
-                    <span className={classes.selectedBand} />
-                  )}
-                  <ListItemIcon
-                    className={
-                      isCurrentPath(text) ? classes.selected : classes.white
-                    }
-                  >
-                    <AccountBox />
-                  </ListItemIcon>
-                  <ListItemText
-                    className={
-                      isCurrentPath(text) ? classes.selected : classes.white
-                    }
-                    primary={text}
-                  />
-                </ListItem>
-              </Link>
-            ),
-          )}
+          {['Home', 'Albums', 'Singles'].map((text, index) => (
+            <Link
+              to={text === 'Home' ? '/' : `/${text}`}
+              style={{ textDecoration: 'none' }}
+              onClick={() => setLocation(text)}
+            >
+              <ListItem key={text}>
+                {isCurrentPath(text) && (
+                  <span className={classes.selectedBand} />
+                )}
+                <ListItemIcon
+                  className={
+                    isCurrentPath(text) ? classes.selected : classes.white
+                  }
+                >
+                  <AccountBox />
+                </ListItemIcon>
+                <ListItemText
+                  className={
+                    isCurrentPath(text) ? classes.selected : classes.white
+                  }
+                  primary={text}
+                />
+              </ListItem>
+            </Link>
+          ))}
           )
         </List>
       )}
@@ -162,7 +161,10 @@ function ResponsiveDrawer(props) {
           <Typography variant="h6" noWrap>
             Spotify Activity
           </Typography>
-          <div className={classes.buttonConnection}>{ConnectionButton}</div>
+          <div className={classes.buttonConnection}>
+          <Button onClick={() => sessionStorage.clear()}>Clear</Button>
+          {ConnectionButton}
+          </div>
         </Toolbar>
       </AppBar>
       {props.connected && (

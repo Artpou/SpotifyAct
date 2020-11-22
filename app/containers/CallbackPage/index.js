@@ -39,8 +39,8 @@ export function CallbackPage(props) {
     .post(url, qs.stringify(data), headers)
     .then(res => {
       console.log(res);
-      localStorage.setItem('token', res.data.access_token);
-      localStorage.setItem('refreshToken', res.data.refresh_token);
+      sessionStorage.setItem('token', res.data.access_token);
+      sessionStorage.setItem('refreshToken', res.data.refresh_token);
       document.location.replace('/');
     })
     .catch(err => {

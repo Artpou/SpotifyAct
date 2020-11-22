@@ -64,7 +64,7 @@ export default function App() {
   });
 
   const connected =
-    localStorage.getItem('token') && localStorage.getItem('token') !== '';
+  sessionStorage.getItem('token') && sessionStorage.getItem('token') !== '';
 
   const [data, setData] = useState({
     user: [],

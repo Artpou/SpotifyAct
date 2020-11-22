@@ -32,7 +32,7 @@ function LogoutButton() {
   const [, setUser] = useState('');
 
   function disconnect() {
-    localStorage.setItem('token', '');
+    sessionStorage.setItem('token', '');
     window.location.reload(false);
   }
 
