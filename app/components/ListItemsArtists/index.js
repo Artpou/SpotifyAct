@@ -16,12 +16,17 @@ import {
   IconButton,
   InputBase,
   InputLabel,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   makeStyles,
   MenuItem,
   Paper,
   Select,
   TextField,
   Typography,
+  useMediaQuery,
 } from '@material-ui/core';
 import React from 'react';
 // import PropTypes from 'prop-types';
@@ -34,6 +39,7 @@ import { SendNotificationContext } from '../../containers/App';
 import { putPlayMusic } from '../../utils/requests';
 
 const useStyles = makeStyles(theme => ({
+  // topbar
   topbar: {
     display: 'flex',
   },
@@ -47,6 +53,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     width: '200px',
   },
+  // grid
   grid: {
     padding: '20px 0',
   },
@@ -75,6 +82,25 @@ const useStyles = makeStyles(theme => ({
   title: {
     color: '#fff',
   },
+  // row
+  listItem: {
+    color: '#fff',
+    background: '#121212',
+    borderRadius: '4px',
+    margin: '8px',
+  },
+  inline: {
+    color: '#3E3E3E',
+  },
+  itemImg: {
+    margin: '0 12px',
+    minWidth: '64px',
+  },
+  titleItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  // new card
   cardNew: {
     margin: '10px 0',
     padding: '10px 2px',
@@ -102,7 +128,11 @@ const useStyles = makeStyles(theme => ({
 
 function ListItemsArtists(props) {
   const classes = useStyles();
+  const matches = useMediaQuery('(min-width:600px)');
+
   const [artists, setArtists] = React.useState([]);
+  const [displayList, setDisplayList] = React.useState('grid');
+
   const setNotification = React.useContext(SendNotificationContext);
 
   React.useEffect(() => {
@@ -128,6 +158,19 @@ function ListItemsArtists(props) {
     });
     setArtists(tmp);
   }, []);
+
+  React.useEffect(() => {
+    setDisplayList(matches ? 'grid' : 'list');
+  }, [matches]);
+
+  function toShorterNumber(num) {
+    if (num > 1000000) {
+      return `${(num / 1000000).toFixed(1)}M `;
+    } else if (num > 1000) {
+      return `${(num / 1000).toFixed(1)}K `;
+    }
+    return `${num} `;
+  }
 
   function AlbumCard(props) {
     const album = props.data.albums.find(obj => obj.artists[0].id === props.id);
@@ -177,33 +220,8 @@ function ListItemsArtists(props) {
     );
   }
 
-  return (
-    <div>
-      <div className={classes.topbar}>
-        <TextField
-          id="standard-basic"
-          label="Rechercher un artiste"
-          className={classes.search}
-        >
-          <IconButton
-            type="submit"
-            className={classes.iconButton}
-            aria-label="search"
-          >
-            <Search />
-          </IconButton>
-        </TextField>
-        <FormControl className={classes.filter}>
-          <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-            Age
-          </InputLabel>
-          <Select value={1}>
-            <MenuItem value={1}>Nouveautés</MenuItem>
-            <MenuItem value={2}>Nom</MenuItem>
-            <MenuItem value={3}>Date d'ajout</MenuItem>
-          </Select>
-        </FormControl>
-      </div>
+  function GridItems() {
+    return (
       <Grid container className={classes.grid} spacing={2}>
         {artists &&
           Array.from(artists).map(artist => (
@@ -265,6 +283,90 @@ function ListItemsArtists(props) {
             </Grid>
           ))}
       </Grid>
+    );
+  }
+
+  function RowItems() {
+    return (
+      <List className={classes.root}>
+        {artists &&
+          Array.from(artists).map(artist => (
+            <ListItem
+              key={artist.id}
+              className={classes.listItem}
+              disableGutters
+            >
+              <ListItemAvatar className={classes.itemImg}>
+                <a href={artist.external_urls.spotify}>
+                  <CardMedia
+                    className={classes.cardMedia}
+                    image={artist.images[1].url}
+                    title="Image title"
+                  />
+                </a>
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <React.Fragment>
+                    <div className={classes.titleItem}>
+                      <a
+                        className={classes.title}
+                        href={artist.external_urls.spotify}
+                      >
+                        {artist.name}
+                      </a>
+                      <Typography style={{ textAlign: 'end' }}>
+                        {toShorterNumber(artist.followers.total)}
+                        followers
+                      </Typography>
+                    </div>
+                  </React.Fragment>
+                }
+                secondary={
+                  <React.Fragment>
+                    {props.data.albums.some(
+                      e => e.artists[0].id === artist.id,
+                    ) && <AlbumCard data={props.data} id={artist.id} />}
+                    {props.data.singles.some(
+                      e => e.artists[0].id === artist.id,
+                    ) && <SingleCard data={props.data} id={artist.id} />}
+                  </React.Fragment>
+                }
+              />
+            </ListItem>
+          ))}
+      </List>
+    );
+  }
+
+  return (
+    <div>
+      <div className={classes.topbar}>
+        <TextField
+          id="standard-basic"
+          label="Rechercher un artiste"
+          className={classes.search}
+        >
+          <IconButton
+            type="submit"
+            className={classes.iconButton}
+            aria-label="search"
+          >
+            <Search />
+          </IconButton>
+        </TextField>
+        <FormControl className={classes.filter}>
+          <InputLabel shrink id="demo-simple-select-placeholder-label-label">
+            Age
+          </InputLabel>
+          <Select value={1}>
+            <MenuItem value={1}>Nouveautés</MenuItem>
+            <MenuItem value={2}>Nom</MenuItem>
+            <MenuItem value={3}>Date d'ajout</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+      {displayList === 'grid' ? <GridItems /> : <RowItems />}
     </div>
   );
 }
