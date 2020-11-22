@@ -14,9 +14,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Link, useLocation, withRouter } from 'react-router-dom';
+import { Button } from '@material-ui/core';
 import LoginButton from '../../components/LoginButton';
 import LogoutButton from '../../components/LogoutButton';
-import { Button } from '@material-ui/core';
 
 export const drawerWidth = 240;
 
@@ -161,10 +161,7 @@ function ResponsiveDrawer(props) {
           <Typography variant="h6" noWrap>
             Spotify Activity
           </Typography>
-          <div className={classes.buttonConnection}>
-          <Button onClick={() => sessionStorage.clear()}>Clear</Button>
-          {ConnectionButton}
-          </div>
+          <div className={classes.buttonConnection}>{ConnectionButton}</div>
         </Toolbar>
       </AppBar>
       {props.connected && (

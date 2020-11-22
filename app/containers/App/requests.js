@@ -93,6 +93,14 @@ export function getAlbums(artists, set, setNotification, loadedAlbums = []) {
   let loaded = 0;
   const errors = [];
 
+  if (artists.length === 0) {
+    set(prevState => ({
+      ...prevState,
+      loadingProgress: 'single',
+      loading: false,
+    }));
+  }
+
   artists.forEach(function iterate(artist) {
     const url = `https://api.spotify.com/v1/artists/${
       artist.id
@@ -122,7 +130,7 @@ export function getAlbums(artists, set, setNotification, loadedAlbums = []) {
       .finally(() => {
         loaded += 1;
         // for the last request
-        if (loaded === artists.length - 1) {
+        if (loaded === artists.length) {
           list.sort((o1, o2) => {
             if (new Date(o1.release_date) < new Date(o2.release_date)) {
               return 1;
@@ -155,13 +163,22 @@ export function getAlbums(artists, set, setNotification, loadedAlbums = []) {
 export function getSingles(artists, set, setNotification, loadSingle = []) {
   set(prevState => ({
     ...prevState,
-    loadingProgress: 'albums',
+    loadingProgress: 'single',
     loading: true,
   }));
 
   const list = loadSingle;
   let loaded = 0;
   const errors = [];
+
+  
+  if (artists.length === 0) {
+    set(prevState => ({
+      ...prevState,
+      loadingProgress: 'finish',
+      loading: false,
+    }));
+  }
 
   // console.log(`${type} LOAD ALL`);
   artists.forEach(function iterate(artist) {
@@ -194,7 +211,7 @@ export function getSingles(artists, set, setNotification, loadSingle = []) {
         loaded += 1;
         // console.log(loaded+'   '+artists.length);
         // for the last request
-        if (loaded === artists.length - 1) {
+        if (loaded === artists.length) {
           list.sort((o1, o2) => {
             if (new Date(o1.release_date) < new Date(o2.release_date)) {
               return 1;

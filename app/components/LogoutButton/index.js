@@ -29,20 +29,14 @@ const useStyles = makeStyles(() => ({
 }));
 
 function LogoutButton() {
-  const [, setUser] = useState('');
 
   function disconnect() {
     sessionStorage.setItem('token', '');
+    sessionStorage.setItem('refresh_token', '');
+    sessionStorage.setItem('show_dialog', false);
     window.location.reload(false);
   }
 
-  /*
-  <Container className={classes.profil}>
-      <a href={user.href} className={classes.profilName}>
-        {user.display_name}
-      </a>
-  </Container>
-  */
   return (
     <Button variant="contained" onClick={disconnect}>
       Logout

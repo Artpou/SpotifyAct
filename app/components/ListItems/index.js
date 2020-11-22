@@ -14,6 +14,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { Link } from 'react-router-dom';
 import ListCards from '../ListItemsCard';
 import ListRows from '../ListItemsRow';
+import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -30,6 +31,11 @@ const useStyles = makeStyles(theme => ({
   },
   list: {
     paddingBottom: theme.spacing(8),
+  },
+  noNew: {
+    color: '#3E3E3E',
+    padding: '20px',
+    textAlign: 'center',
   },
   footer: {
     padding: theme.spacing(4),
@@ -94,12 +100,17 @@ export default function ListItems(props) {
         {resultList}
       </div>
       <hr />
-      {displayList === 'grid' ? (
+      {props.list.length === 0 &&
+        <Typography className={classes.noNew}>
+          <h2>Aucun nouveaux {props.name} :(</h2>
+        </Typography>
+      }
+      {props.list.length > 0 && displayList === 'grid' ? (
         <ListCards list={props.list} datas={props.datas} reduced={props.reduced} />
       ) : (
         <ListRows list={props.list} datas={props.datas} reduced={props.reduced} />
       )}
-      {props.reduced && (
+      {props.reduced && props.list.length > 0 && (
         <div className={classes.footer}>
           <Link to={props.link}>
             <h3>Voir les {props.list.length} nouveaux {props.name}</h3>

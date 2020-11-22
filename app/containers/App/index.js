@@ -47,10 +47,8 @@ const theme = createMuiTheme({
 });
 
 const useStyles = makeStyles({
-  main: {
-    textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
+  root: {
+    marginTop: '20px',
   },
 });
 
@@ -125,7 +123,7 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <ResponsiveDrawer connected={connected}>
-          <Container>
+          <Container className={classes.root}>
             <GlobalStyle />
             <SendNotificationContext.Provider value={setNotification}>
               <NotificationBar notification={notification} />

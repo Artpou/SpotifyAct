@@ -21,6 +21,8 @@ function LoginButton() {
   const classes = useStyles();
 
   function connect() {
+    const showDialog = sessionStorage.getItem('show_dialog') ? 'true' : 'false';
+    sessionStorage.setItem('show_dialog', false);
     window.location.href = `https://accounts.spotify.com/authorize?${querystring.stringify(
       {
         response_type: SpotifyData.response_type,
@@ -28,6 +30,7 @@ function LoginButton() {
         scope: SpotifyData.scope,
         redirect_uri: SpotifyData.redirect_uri,
         state: SpotifyData.state,
+        show_dialog: showDialog,
       },
     )}`;
   }
