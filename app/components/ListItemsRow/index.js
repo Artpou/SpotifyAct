@@ -124,7 +124,7 @@ function ListItemsRow(props) {
               <button
                 type="button"
                 onClick={() =>
-                  putPlayMusic(album.uri, setNotification).then(res =>
+                  putPlayMusic(album.uri).then(res =>
                     setNotification({
                       type: 'play',
                       text: `${album.name} de ${album.artists[0].name}`,

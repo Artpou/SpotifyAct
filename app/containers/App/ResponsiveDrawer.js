@@ -111,9 +111,9 @@ function ResponsiveDrawer(props) {
 
   const drawerItems = [
     { name: 'Accueil', link: '/', icon: <HomeIcon /> },
+    { name: 'Artistes suivies', link: '/Artists', icon: <ArtistsIcon /> },
     { name: 'Albums', link: '/Albums', icon: <AlbumIcon /> },
     { name: 'Singles', link: '/Singles', icon: <SingleIcon /> },
-    { name: 'Artistes suivies', link: '/Artists', icon: <ArtistsIcon /> },
   ];
 
   const drawer = (
