@@ -16,13 +16,15 @@ import NotFoundPage from 'containers/NotFoundPage';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 
-import { makeStyles } from '@material-ui/core';
+import { Container, makeStyles } from '@material-ui/core';
 import { getUser, getArtists, getAlbums, getSingles } from './requests';
 import GlobalStyle from '../../global-styles';
-import ResponsiveDrawer from '../Template/ResponsiveDrawer';
+import ResponsiveDrawer from './ResponsiveDrawer';
 import AlbumsPage from '../AlbumsPage';
 import SinglesPage from '../SinglesPage';
 import ConnexionPage from '../ConnexionPage';
+import NotificationBar from '../../components/NotificationBar';
+import { NotificationProvider, useNotificationState } from './NotificationContext';
 
 const theme = createMuiTheme({
   palette: {
@@ -54,7 +56,13 @@ const useStyles = makeStyles({
 
 export default function App() {
   const classes = useStyles();
-  const param = window.location.pathname;
+
+  const [notification, setNotification] = React.useState({
+    type: '',
+    text: '',
+  });
+
+  const SendNotificationContext = React.createContext(setNotification);
   const connected =
     localStorage.getItem('token') && localStorage.getItem('token') !== '';
 
@@ -63,13 +71,14 @@ export default function App() {
     artists: [],
     albums: [],
     singles: [],
+    notification: 'test',
     loading: false,
     loadingProgress: 'user',
     loaded: false,
   });
 
   useEffect(() => {
-    console.log(window.location.search);
+    console.log(setNotification);
     if (
       connected &&
       window.location.pathname !== '/callback' &&
@@ -79,7 +88,7 @@ export default function App() {
       console.log(`load ${data.loadingProgress}`);
       switch (data.loadingProgress) {
         case 'user':
-          getUser(setData);
+          getUser(setData, setNotification);
           break;
 
         case 'artists':
@@ -87,19 +96,19 @@ export default function App() {
           break;
 
         case 'albums':
-          getAlbums(data.artists, setData);
+          getAlbums(data.artists, setData, setNotification);
           break;
 
         case 'single':
-          getSingles(data.artists, setData);
+          getSingles(data.artists, setData, setNotification);
           break;
 
         case 'finish':
-          console.log(data);
           setData(prevState => ({
             ...prevState,
             loaded: true,
           }));
+          setNotification({type: 'success', text: 'chargement terminé !'})
           break;
 
         case 'error':
@@ -116,28 +125,37 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <ResponsiveDrawer connected={connected}>
-          <GlobalStyle />
-          {connected ? (
-            <Switch>
-              <Route exact path="/" render={() => <HomePage data={data} />} />
-              <Route
-                exact
-                path="/Albums"
-                render={() => <AlbumsPage data={data} />}
-              />
-              <Route
-                exact
-                path="/Singles"
-                render={() => <SinglesPage data={data} />}
-              />
-              <Route component={NotFoundPage} />
-            </Switch>
-          ) : (
-            <Switch>
-              <Route exact path="/callback" component={CallbackPage} />
-              <Route component={() => <ConnexionPage />} />
-            </Switch>
-          )}
+          <Container>
+            <GlobalStyle />
+            <SendNotificationContext.Provider>
+              <NotificationBar notification={notification} />
+              {connected ? (
+                <Switch>
+                  <Route
+                    exact
+                    path="/"
+                    render={() => <HomePage data={data} />}
+                  />
+                  <Route
+                    exact
+                    path="/Albums"
+                    render={() => <AlbumsPage data={data} />}
+                  />
+                  <Route
+                    exact
+                    path="/Singles"
+                    render={() => <SinglesPage data={data} />}
+                  />
+                  <Route component={NotFoundPage} />
+                </Switch>
+              ) : (
+                <Switch>
+                  <Route exact path="/callback" component={CallbackPage} />
+                  <Route component={() => <ConnexionPage />} />
+                </Switch>
+              )}
+            </SendNotificationContext.Provider>
+          </Container>
         </ResponsiveDrawer>
       </BrowserRouter>
     </ThemeProvider>

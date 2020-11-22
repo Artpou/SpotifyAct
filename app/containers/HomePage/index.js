@@ -13,8 +13,7 @@ import ListItems from '../../components/ListItems';
 
 export default function HomePage(props) {
   return (
-    <Container>
-      {!props.data.loaded ? (
+      !props.data.loaded ? (
         <Loader text={props.data.loadingProgress} />
       ) : (
         <div>
@@ -34,7 +33,6 @@ export default function HomePage(props) {
             reduced
           />
         </div>
-      )}
-    </Container>
+      )
   );
 }

@@ -19,6 +19,7 @@ import React from 'react';
 // import styled from 'styled-components';
 
 import { FormattedMessage } from 'react-intl';
+import { useNotificationState } from '../../containers/App/NotificationContext';
 import { putPlayMusic } from '../../utils/requests';
 import messages from './messages';
 
@@ -62,6 +63,7 @@ const useStyles = makeStyles(theme => ({
 
 function ListItemsCard(props) {
   const classes = useStyles();
+
   return (
     <Grid container className={classes.grid} spacing={2}>
       {props.list &&
@@ -77,7 +79,10 @@ function ListItemsCard(props) {
               xl={props.reduced ? 4 : 2}
             >
               <Card className={classes.card}>
-                <button type="button" onClick={() => putPlayMusic(album.uri)}>
+                <button
+                  type="button"
+                  onClick={() => putPlayMusic(album.uri, props.data)}
+                >
                   <CardMedia
                     className={classes.cardMedia}
                     height={300}

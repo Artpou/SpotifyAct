@@ -4,9 +4,7 @@
  *
  */
 import React, { useState } from 'react';
-import { Card, Container } from '@material-ui/core';
 
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import ListIcon from '@material-ui/icons/FormatListBulleted';
 import GridIcon from '@material-ui/icons/Apps';
@@ -97,9 +95,9 @@ export default function ListItems(props) {
       </div>
       <hr />
       {displayList === 'grid' ? (
-        <ListCards list={props.list} max={props.max} reduced={props.reduced} />
+        <ListCards list={props.list} datas={props.datas} reduced={props.reduced} />
       ) : (
-        <ListRows list={props.list} max={props.max} reduced={props.reduced} />
+        <ListRows list={props.list} datas={props.datas} reduced={props.reduced} />
       )}
       {props.reduced && (
         <div className={classes.footer}>

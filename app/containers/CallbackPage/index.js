@@ -41,7 +41,7 @@ export function CallbackPage(props) {
       console.log(res);
       localStorage.setItem('token', res.data.access_token);
       localStorage.setItem('refreshToken', res.data.refresh_token);
-      document.location.replace('/?connection');
+      document.location.replace('/');
     })
     .catch(err => {
       console.log("failed load token");

@@ -10,15 +10,11 @@ import Loader from '../../components/Loader';
 import ListItems from '../../components/ListItems';
 
 export default function SinglesPage(props) {
-  return (
-    <Container>
-      {!props.data.loaded ? (
-        <Loader text={props.data.loadingProgress} />
-      ) : (
-        <div>
-          <ListItems name="singles" list={props.data.singles} />
-        </div>
-      )}
-    </Container>
+  return !props.data.loaded ? (
+    <Loader text={props.data.loadingProgress} />
+  ) : (
+    <div>
+      <ListItems name="singles" list={props.data.singles} />
+    </div>
   );
 }

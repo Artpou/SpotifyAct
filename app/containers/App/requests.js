@@ -1,12 +1,13 @@
 import axios from 'axios';
+import { useNotificationState } from './NotificationContext';
 
 function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function reloadToken(set) {
-  //console.log(localStorage.getItem('token'));
-  //document.location.replace(`/?code=${localStorage.getItem('refresh_token')}`);
+  // console.log(localStorage.getItem('token'));
+  // document.location.replace(`/?code=${localStorage.getItem('refresh_token')}`);
   set(prevState => ({
     ...prevState,
     loadingProgress: 'error',
@@ -28,7 +29,7 @@ export function getUser(set) {
       },
     })
     .then(res => {
-      console.log(res);
+      // console.log(res);
       set(prevState => ({
         ...prevState,
         user: res.data,
@@ -37,7 +38,6 @@ export function getUser(set) {
       }));
     })
     .catch(() => {
-      console.log("try to reload token");
       reloadToken(set);
     });
 }
@@ -49,6 +49,7 @@ export function getArtists(set, next = '', loaded = []) {
     loading: true,
   }));
 
+  // console.log(nextPath);
   const nextPath = next !== '' ? `&after=${next}` : '';
   const url = `https://api.spotify.com/v1/me/following?type=artist${nextPath}&limit=50`;
   const artists = loaded;
@@ -80,7 +81,7 @@ export function getArtists(set, next = '', loaded = []) {
     });
 }
 
-export function getAlbums(artists, set, loadedAlbums = []) {
+export function getAlbums(artists, set, setNotification, loadedAlbums = []) {
   set(prevState => ({
     ...prevState,
     loadingProgress: 'albums',
@@ -91,7 +92,6 @@ export function getAlbums(artists, set, loadedAlbums = []) {
   let loaded = 0;
   const errors = [];
 
-  // console.log(`${type} LOAD ALL`);
   artists.forEach(function iterate(artist) {
     const url = `https://api.spotify.com/v1/artists/${
       artist.id
@@ -120,7 +120,6 @@ export function getAlbums(artists, set, loadedAlbums = []) {
       })
       .finally(() => {
         loaded += 1;
-        // console.log(loaded+'   '+artists.length);
         // for the last request
         if (loaded === artists.length - 1) {
           list.sort((o1, o2) => {
@@ -133,19 +132,13 @@ export function getAlbums(artists, set, loadedAlbums = []) {
             return 0;
           });
           if (errors.length > 0) {
-            console.log(errors);
-            console.log('RELOAD ERRORS');
-            set(prevState => ({
-              ...prevState,
-              loadingProgress:
-                "albums, la première initialisation peut prendre jusqu'à 1 minute",
-            }));
             timeout(2500).then(() => {
               console.log('reload');
-              getAlbums(errors, set, list);
+              setNotification({type: 'info', text: 'rechargement des nouveaux albums ...'})
+              getAlbums(errors, set, setNotification, list);
             });
           } else {
-            console.log(list);
+            // console.log(list);
             set(prevState => ({
               ...prevState,
               albums: list,
@@ -158,7 +151,7 @@ export function getAlbums(artists, set, loadedAlbums = []) {
   });
 }
 
-export function getSingles(artists, set, loadSingle = []) {
+export function getSingles(artists, set, setNotification, loadSingle = []) {
   set(prevState => ({
     ...prevState,
     loadingProgress: 'albums',
@@ -211,19 +204,13 @@ export function getSingles(artists, set, loadSingle = []) {
             return 0;
           });
           if (errors.length > 0) {
-            console.log(errors);
-            console.log('RELOAD ERRORS');
-            set(prevState => ({
-              ...prevState,
-              loadingProgress:
-                "singles, la première initialisation peut prendre jusqu'à 1 minute",
-            }));
             timeout(2500).then(() => {
               console.log('reload');
-              getSingles(errors, set, list);
+              setNotification({type: 'info', text: 'rechargement des nouveaux singles ...'})
+              getAlbums(errors, set, setNotification, list);
             });
           } else {
-            console.log(list);
+            // console.log(list);
             set(prevState => ({
               ...prevState,
               singles: list,
