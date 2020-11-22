@@ -134,7 +134,7 @@ export function getAlbums(artists, set, setNotification, loadedAlbums = []) {
           if (errors.length > 0) {
             timeout(2500).then(() => {
               console.log('reload');
-              setNotification({type: 'info', text: 'rechargement des nouveaux albums ...'})
+              setNotification({type: 'reload', text: 'rechargement des nouveaux albums ...'})
               getAlbums(errors, set, setNotification, list);
             });
           } else {
@@ -206,7 +206,7 @@ export function getSingles(artists, set, setNotification, loadSingle = []) {
           if (errors.length > 0) {
             timeout(2500).then(() => {
               console.log('reload');
-              setNotification({type: 'info', text: 'rechargement des nouveaux singles ...'})
+              setNotification({type: 'reload', text: 'rechargement des nouveaux singles ...'})
               getAlbums(errors, set, setNotification, list);
             });
           } else {

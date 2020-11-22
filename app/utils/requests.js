@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-export async function putPlayMusic(uri) {
+export async function putPlayMusic(uri, set) {
   const url = `https://api.spotify.com/v1/me/player/play`;
-  await axios.put(
+  axios.put(
     url,
     {
       context_uri: uri,

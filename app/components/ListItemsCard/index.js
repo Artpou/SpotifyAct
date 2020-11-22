@@ -19,7 +19,7 @@ import React from 'react';
 // import styled from 'styled-components';
 
 import { FormattedMessage } from 'react-intl';
-import { useNotificationState } from '../../containers/App/NotificationContext';
+import { SendNotificationContext } from '../../containers/App';
 import { putPlayMusic } from '../../utils/requests';
 import messages from './messages';
 
@@ -63,6 +63,7 @@ const useStyles = makeStyles(theme => ({
 
 function ListItemsCard(props) {
   const classes = useStyles();
+  const setNotification = React.useContext(SendNotificationContext);
 
   return (
     <Grid container className={classes.grid} spacing={2}>
@@ -110,10 +111,18 @@ function ListItemsCard(props) {
                 <CardActions className={classes.cardFooter}>
                   <Button
                     color="primary"
-                    onClick={() => putPlayMusic(album.uri)}
+                    onClick={() =>
+                      putPlayMusic(album.uri, setNotification).then(res =>
+                        setNotification({
+                          type: 'play',
+                          text: `${album.name} de ${album.artists[0].name}`,
+                        }),
+                      )
+                    }
                   >
                     play
                   </Button>
+
                   <Typography
                     component="span"
                     className={classes.cardFooterInner}

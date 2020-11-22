@@ -17,7 +17,7 @@ import { Link, useLocation, withRouter } from 'react-router-dom';
 import LoginButton from '../../components/LoginButton';
 import LogoutButton from '../../components/LogoutButton';
 
-const drawerWidth = 240;
+export const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   root: {

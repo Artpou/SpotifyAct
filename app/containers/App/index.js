@@ -54,15 +54,15 @@ const useStyles = makeStyles({
   },
 });
 
+export const SendNotificationContext = React.createContext();
+
 export default function App() {
   const classes = useStyles();
-
   const [notification, setNotification] = React.useState({
     type: '',
     text: '',
   });
 
-  const SendNotificationContext = React.createContext(setNotification);
   const connected =
     localStorage.getItem('token') && localStorage.getItem('token') !== '';
 
@@ -78,7 +78,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    console.log(setNotification);
+    //console.log(setNotification);
     if (
       connected &&
       window.location.pathname !== '/callback' &&
@@ -127,7 +127,7 @@ export default function App() {
         <ResponsiveDrawer connected={connected}>
           <Container>
             <GlobalStyle />
-            <SendNotificationContext.Provider>
+            <SendNotificationContext.Provider value={setNotification}>
               <NotificationBar notification={notification} />
               {connected ? (
                 <Switch>

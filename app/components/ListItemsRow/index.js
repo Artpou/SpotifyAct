@@ -19,6 +19,7 @@ import React from 'react';
 
 import PlayIcon from '@material-ui/icons/PlayCircleOutline';
 import { putPlayMusic } from '../../utils/requests';
+import { SendNotificationContext } from '../../containers/App';
 
 const useStyles = makeStyles(() => ({
   cardMedia: {
@@ -57,6 +58,8 @@ const useStyles = makeStyles(() => ({
 
 function ListItemsRow(props) {
   const classes = useStyles();
+  const setNotification = React.useContext(SendNotificationContext);
+
   return (
     <List className={classes.root}>
       {props.list &&
@@ -117,7 +120,18 @@ function ListItemsRow(props) {
                   </React.Fragment>
                 }
               />
-              <button type="button" onClick={() => putPlayMusic(album.uri)}>
+
+              <button
+                type="button"
+                onClick={() =>
+                  putPlayMusic(album.uri, setNotification).then(res =>
+                    setNotification({
+                      type: 'play',
+                      text: `${album.name} de ${album.artists[0].name}`,
+                    }),
+                  )
+                }
+              >
                 <PlayIcon color="primary" className={classes.playButton} />
               </button>
             </ListItem>
