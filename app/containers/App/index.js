@@ -74,8 +74,12 @@ export default function App() {
     artists: [],
     albums: [],
     singles: [],
-    loadingProgress: 'user',
     loaded: false,
+  });
+
+  const [loading, setLoading] = useState({
+    text: "Chargement de l'utilsateur",
+    progress: 0,
   });
 
   useEffect(() => {
@@ -86,25 +90,46 @@ export default function App() {
           ...prevState,
           user,
         }));
+        setLoading({
+          text: "Chargement des artistes",
+          progress: 5,
+        });
         getArtists().then(artists => {
           console.log(artists);
           setData(prevState => ({
             ...prevState,
             artists,
+            progress: 20,
           }));
-          getAlbums(artists, setNotification).then(albums => {
+          setLoading({
+            text: `Chargement des nouveaux albums`,
+            progress: 5,
+          });
+          getAlbums(artists, setNotification, setLoading).then(albums => {
             console.log(albums);
             setData(prevState => ({
               ...prevState,
               albums,
             }));
-            getSingles(artists, setNotification).then(singles => {
+            setLoading(old => ({
+              text: `Chargement des nouveaux singles`,
+              progress: 60,
+            }));
+            getSingles(artists, setNotification, setLoading).then(singles => {
               console.log(singles);
               setData(prevState => ({
                 ...prevState,
                 singles,
                 loaded: true,
               }));
+              setLoading({
+                text: `Chargement terminé !`,
+                progress: 100,
+              });
+              setNotification({
+                type: 'success',
+                text: ''
+              }),
             });
           });
         });
@@ -125,17 +150,17 @@ export default function App() {
                   <Route
                     exact
                     path="/"
-                    render={() => <HomePage data={data} />}
+                    render={() => <HomePage data={data} loading={loading} />}
                   />
                   <Route
                     exact
                     path="/Albums"
-                    render={() => <AlbumsPage data={data} />}
+                    render={() => <AlbumsPage data={data} loading={loading} />}
                   />
                   <Route
                     exact
                     path="/Singles"
-                    render={() => <SinglesPage data={data} />}
+                    render={() => <SinglesPage data={data} loading={loading} />}
                   />
                   <Route
                     exact

@@ -3,7 +3,12 @@
  * Loader
  *
  */
-import { CircularProgress, Container, makeStyles } from '@material-ui/core';
+import {
+  CircularProgress,
+  Container,
+  LinearProgress,
+  makeStyles,
+} from '@material-ui/core';
 import React from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
@@ -30,9 +35,14 @@ function Loader(props) {
   return (
     <Container className={classes.loaderContainer}>
       <Container className={classes.loader}>
-        <CircularProgress color="#1DB954" size={100} padding={100} />
+        <LinearProgress
+          variant="determinate"
+          value={props.value}
+          size={100}
+          padding={100}
+        />
       </Container>
-      {props.text}
+      {props.value && `${props.value}% - `} {props.text}
     </Container>
   );
 }

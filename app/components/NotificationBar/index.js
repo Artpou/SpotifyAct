@@ -79,7 +79,6 @@ function NotificationBar(props) {
       >
         <Alert
           className={classes.alert}
-          severity={props.notification.type}
           onClose={handleClose}
           icon={renderSwitch(props.notification.type)}
         >

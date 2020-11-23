@@ -74,7 +74,7 @@ export function getArtists(next = '', loaded = []) {
  * @param {*} artists
  * @param {*} callback
  */
-export function getAlbums(artists, setNotification, callback = []) {
+export function getAlbums(artists, setNotification, setLoading, callback = []) {
   const list = callback;
   const errors = [];
   let loaded = 0;
@@ -113,14 +113,27 @@ export function getAlbums(artists, setNotification, callback = []) {
           // for the last request
           if (loaded === artists.length) {
             if (errors.length > 0) {
+              setNotification({
+                type: 'reload',
+                text: 'rechargement des albums ...',
+              });
+              if (setLoading) {
+                setLoading(old => ({
+                  progress: Math.round(
+                    old.progress +
+                      (50 - old.progress) * (1 - errors.length / loaded),
+                  ),
+                  text: `Chargement des nouveaux albums (${
+                    errors.length
+                  } restants)`,
+                }));
+              }
               timeout(4500).then(() => {
-                setNotification({
-                  type: 'reload',
-                  text: 'rechargement des singles ...',
-                });
-                getAlbums(errors, setNotification, list).then(res => {
-                  resolve(res);
-                });
+                getAlbums(errors, setNotification, setLoading, list).then(
+                  res => {
+                    resolve(res);
+                  },
+                );
               });
             } else {
               list.sort((o1, o2) => {
@@ -146,7 +159,12 @@ export function getAlbums(artists, setNotification, callback = []) {
  * @param {*} artists
  * @param {*} callback
  */
-export function getSingles(artists, setNotification, callback = []) {
+export function getSingles(
+  artists,
+  setNotification,
+  setLoading,
+  callback = [],
+) {
   const list = callback;
   const errors = [];
   let loaded = 0;
@@ -185,14 +203,28 @@ export function getSingles(artists, setNotification, callback = []) {
           // for the last request
           if (loaded === artists.length) {
             if (errors.length > 0) {
+              console.log(errors.length/loaded);
+              setNotification({
+                type: 'reload',
+                text: 'rechargement des singles ...',
+              });
+              if (setLoading) {
+                setLoading(old => ({
+                  progress: Math.round(
+                    old.progress +
+                      (100 - old.progress) * (1 - errors.length / loaded),
+                  ),
+                  text: `Chargement des nouveaux singles (${
+                    errors.length
+                  } restants)`,
+                }));
+              }
               timeout(4500).then(() => {
-                setNotification({
-                  type: 'reload',
-                  text: 'rechargement des singles ...',
-                });
-                getSingles(errors, setNotification, list).then(res => {
-                  resolve(res);
-                });
+                getSingles(errors, setNotification, setLoading, list).then(
+                  res => {
+                    resolve(res);
+                  },
+                );
               });
             } else {
               list.sort((o1, o2) => {
