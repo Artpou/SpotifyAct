@@ -107,7 +107,7 @@ export default function ListItems(props) {
       <hr />
       {props.list.length === 0 &&
         <Typography className={classes.noNew}>
-          <h2>Aucun nouveaux {props.name} :(</h2>
+          <h2>Pas de nouveauté :(</h2>
         </Typography>
       }
       {props.list.length > 0 && displayList === 'grid' ? (

@@ -85,7 +85,6 @@ export default function App() {
   useEffect(() => {
     if (connected && window.location.pathname !== '/callback') {
       getUser().then(user => {
-        console.log(user);
         setData(prevState => ({
           ...prevState,
           user,
@@ -95,7 +94,6 @@ export default function App() {
           progress: 5,
         });
         getArtists().then(artists => {
-          console.log(artists);
           setData(prevState => ({
             ...prevState,
             artists,
@@ -106,7 +104,6 @@ export default function App() {
             progress: 5,
           });
           getAlbums(artists, setNotification, setLoading).then(albums => {
-            console.log(albums);
             setData(prevState => ({
               ...prevState,
               albums,
@@ -116,7 +113,6 @@ export default function App() {
               progress: 60,
             }));
             getSingles(artists, setNotification, setLoading).then(singles => {
-              console.log(singles);
               setData(prevState => ({
                 ...prevState,
                 singles,
@@ -128,9 +124,8 @@ export default function App() {
               });
               setNotification({
                 type: 'success',
-                text: ''
-              }),
-            });
+                text: '',
+              })});
           });
         });
       });
